@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E629225319C3696C00CB692F /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E629225219C3696C00CB692F /* MultipeerConnectivity.framework */; };
 		E64333B019C3693300BFDD88 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64333AF19C3693300BFDD88 /* AppDelegate.swift */; };
 		E64333B219C3693300BFDD88 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64333B119C3693300BFDD88 /* ViewController.swift */; };
 		E64333B519C3693300BFDD88 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E64333B319C3693300BFDD88 /* Main.storyboard */; };
@@ -26,6 +27,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E629225219C3696C00CB692F /* MultipeerConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultipeerConnectivity.framework; path = System/Library/Frameworks/MultipeerConnectivity.framework; sourceTree = SDKROOT; };
 		E64333AA19C3693300BFDD88 /* Dust.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dust.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E64333AE19C3693300BFDD88 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E64333AF19C3693300BFDD88 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -43,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E629225319C3696C00CB692F /* MultipeerConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,6 +62,7 @@
 		E64333A119C3693300BFDD88 = {
 			isa = PBXGroup;
 			children = (
+				E629225219C3696C00CB692F /* MultipeerConnectivity.framework */,
 				E64333AC19C3693300BFDD88 /* Dust */,
 				E64333C219C3693300BFDD88 /* DustTests */,
 				E64333AB19C3693300BFDD88 /* Products */,
@@ -407,6 +411,7 @@
 				E64333CB19C3693300BFDD88 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E64333CC19C3693300BFDD88 /* Build configuration list for PBXNativeTarget "DustTests" */ = {
 			isa = XCConfigurationList;
@@ -415,6 +420,7 @@
 				E64333CE19C3693300BFDD88 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
