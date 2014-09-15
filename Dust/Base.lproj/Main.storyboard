@@ -36,7 +36,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="peC-vw-jOB">
                         <nil key="title"/>
-                        <barButtonItem key="leftBarButtonItem" image="disconnect" id="UFM-Oj-5eM">
+                        <barButtonItem key="leftBarButtonItem" image="disconnect" style="plain" id="UFM-Oj-5eM">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </barButtonItem>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="U8j-BL-sOf">
@@ -63,7 +63,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="colorSegmentControl" destination="U8j-BL-sOf" id="vpa-h2-GuJ"/>
-                        <outlet property="connectionButton" destination="UFM-Oj-5eM" id="YXO-PM-uoy"/>
+                        <outlet property="connectionButton" destination="UFM-Oj-5eM" id="hs8-zI-CLg"/>
                         <outlet property="searchButton" destination="XCj-TL-cgY" id="7Qk-cf-Vro"/>
                     </connections>
                 </viewController>

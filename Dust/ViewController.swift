@@ -9,6 +9,25 @@
 import UIKit
 import MultipeerConnectivity
 
+enum GestureType {
+  case Pan, Tap
+}
+
+enum DustColors: Int {
+  case Red = 0, Orange, Yellow, Green, Blue, Violet
+  
+  func get() -> UIColor! {
+    switch (self) {
+    case .Red: return UIColor(red: 0.898, green: 0.302, blue: 0.259, alpha: 1.0)
+    case .Orange: return UIColor(red: 0.894, green: 0.494, blue: 0.188, alpha: 1.0)
+    case .Yellow: return UIColor(red: 0.941, green: 0.880, blue: 0.336, alpha: 1.0)
+    case .Green: return UIColor(red: 0.224, green: 0.792, blue: 0.455, alpha: 1.0)
+    case .Blue: return UIColor(red: 0.227, green: 0.600, blue: 0.847, alpha: 1.0)
+    case .Violet: return UIColor(red: 0.604, green: 0.361, blue: 0.706, alpha: 1.0)
+    }
+  }
+}
+
 class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessionDelegate, UIGestureRecognizerDelegate, MCAdvertiserAssistantDelegate, NSStreamDelegate {
   var session: MCSession!
   var myEmitter: CAEmitterLayer!
@@ -19,18 +38,10 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
   var localPeerID: MCPeerID! = MCPeerID(displayName: UIDevice.currentDevice().name)
   
   let dustServiceType: String! = "dust-service"
-  let colors: [UIColor] = [
-    UIColor(red: 0.898, green: 0.302, blue: 0.259, alpha: 1.0),
-    UIColor(red: 0.894, green: 0.494, blue: 0.188, alpha: 1.0),
-    UIColor(red: 0.941, green: 0.765, blue: 0.188, alpha: 1.0),
-    UIColor(red: 0.224, green: 0.792, blue: 0.455, alpha: 1.0),
-    UIColor(red: 0.227, green: 0.600, blue: 0.847, alpha: 1.0),
-    UIColor(red: 0.604, green: 0.361, blue: 0.706, alpha: 1.0)
-  ]
   
-  @IBOutlet weak var searchButton: UIBarButtonItem!
-  @IBOutlet weak var connectionButton: UIBarButtonItem!
-  @IBOutlet weak var colorSegmentControl: UISegmentedControl!
+  @IBOutlet var searchButton: UIBarButtonItem!
+  @IBOutlet var connectionButton: UIBarButtonItem!
+  @IBOutlet var colorSegmentControl: UISegmentedControl!
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -58,17 +69,17 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     advertiserAssistant.delegate = self
     advertiserAssistant.start()
     
-    searchButton.tintColor = colors[colorSegmentControl.selectedSegmentIndex]
-    connectionButton.tintColor = colors[colorSegmentControl.selectedSegmentIndex]
-    colorSegmentControl.tintColor = colors[colorSegmentControl.selectedSegmentIndex]
-    
+    searchButton.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
+    connectionButton.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
+    colorSegmentControl.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
+
     myEmitter = createEmmitter()
     theirEmitter = createEmmitter()
   }
   
   func createEmmitter() -> CAEmitterLayer {
     var newEmitterLayer = CAEmitterLayer()
-    newEmitterLayer.emitterPosition = CGPointMake(0,0)
+    newEmitterLayer.emitterPosition = CGPointMake(-100,-100)
     newEmitterLayer.emitterSize = CGSizeMake(60.0,1)
     newEmitterLayer.emitterMode = kCAEmitterLayerOutline
     newEmitterLayer.emitterShape = kCAEmitterLayerPoint
@@ -83,7 +94,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     newEmitterCell.birthRate = 1000
     newEmitterCell.lifetime = 6.0
     newEmitterCell.lifetimeRange = 0.5
-    newEmitterCell.color = colors[colorSegmentControl.selectedSegmentIndex].CGColor
+    newEmitterCell.color = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get().CGColor
     newEmitterCell.redSpeed = 0.000
     newEmitterCell.greenSpeed = 0.000
     newEmitterCell.blueSpeed = 0.000
@@ -112,10 +123,13 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
   }
   
   @IBAction func selectColor(sender: UISegmentedControl) {
-    searchButton.tintColor = colors[sender.selectedSegmentIndex]
-    connectionButton.tintColor = colors[sender.selectedSegmentIndex]
-    colorSegmentControl.tintColor = colors[sender.selectedSegmentIndex]
-    myEmitter.setValue(colors[sender.selectedSegmentIndex].CGColor, forKeyPath: "emitterCells.dustCell.color")
+    searchButton.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
+    connectionButton.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
+    colorSegmentControl.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
+    myEmitter.setValue(DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
+    
+    if session.connectedPeers.count == 0 { return }
+    sendDataColor()
   }
   
   @IBAction func searchPeers(sender: UIBarButtonItem) {
@@ -126,27 +140,21 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
   func handlePanGesture(gestureRecognizer: UIPanGestureRecognizer) {
     let point = gestureRecognizer.locationInView(self.view)
     
-    myEmitter.emitterPosition = point
+    myEmitter.emitterPosition = (gestureRecognizer.state == .Ended) ?CGPointMake(-100,-100):point
     myEmitter.emitterShape = kCAEmitterLayerPoint
     
+    if session.connectedPeers.count == 0 { return }
     switch gestureRecognizer.state {
     case .Began:
-      if session.connectedPeers.count == 0 { return }
       var start = true
       var sendData = NSData(bytes: &start, length:  sizeof(Bool))
       outputStream.write(UnsafePointer<UInt8>(sendData.bytes), maxLength: sendData.length)
-      break
     case .Changed:
-      if session.connectedPeers.count == 0 { return }
-      self.sendDataMessage(point, peerColor: Float(colorSegmentControl.selectedSegmentIndex), gestureType: 0.0 )
-      break
+      self.sendDataMessage(point, gestureType: .Pan)
     case .Ended:
-      myEmitter.emitterPosition = CGPointMake(0, 0)
-      if session.connectedPeers.count == 0 { return }
       var start = false
       var sendData = NSData(bytes: &start, length:  sizeof(Bool))
       outputStream.write(UnsafePointer<UInt8>(sendData.bytes), maxLength: sendData.length)
-      break
     default: return
     }
   }
@@ -158,25 +166,31 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     myEmitter.emitterShape = kCAEmitterLayerCircle
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), {
-      self.myEmitter.emitterPosition = CGPointMake(0, 0)
+      self.myEmitter.emitterPosition = CGPointMake(-100,-100)
     })
     
     if session.connectedPeers.count == 0 { return }
-    self.sendDataMessage(point, peerColor: Float(colorSegmentControl.selectedSegmentIndex), gestureType: 1.0 )
+    self.sendDataMessage(point, gestureType: .Tap)
   }
   
-  func sendDataMessage(point: CGPoint, peerColor: Float, gestureType: Float) {
+  func sendDataMessage(point: CGPoint, gestureType: GestureType) {
     var sendData = NSMutableData()
     var percentX = Float(point.x/view.bounds.width)
     var percentY = Float(point.y/view.bounds.height)
-    var color: Float = peerColor
-    var type: Float = gestureType
+    var type = gestureType
 
     sendData.appendBytes(&percentX, length: sizeof(Float))
     sendData.appendBytes(&percentY, length: sizeof(Float))
-    sendData.appendBytes(&color, length: sizeof(Float))
-    sendData.appendBytes(&type, length: sizeof(Float))
-
+    sendData.appendBytes(&type, length: sizeof(GestureType))
+    
+    if session.connectedPeers.count == 0 { return }
+    outputStream.write(UnsafePointer<UInt8>(sendData.bytes), maxLength: sendData.length)
+  }
+  
+  func sendDataColor() {
+    var sendData = NSMutableData()
+    var color: DustColors = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)!
+    sendData.appendBytes(&color, length: 2)
     outputStream.write(UnsafePointer<UInt8>(sendData.bytes), maxLength: sendData.length)
   }
   
@@ -196,89 +210,91 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
   func session(session: MCSession!, peer peerID: MCPeerID!, didChangeState state: MCSessionState) {
     switch state {
     case .Connected:
-      println("::SESSION PEERID: Connected")
+      connectionButton.image = UIImage(named: "connect")
       outputStream = session.startStreamWithName("dust-stream", toPeer: peerID, error: nil)
       outputStream.delegate = self;
       outputStream.scheduleInRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
       outputStream.open()
-      break
+      sendDataColor()
     case MCSessionState.Connecting:
-      println("::SESSION PEERID: Connecting")
-      break
+      connectionButton.image = UIImage(named: "disconnect")
     case MCSessionState.NotConnected:
-      println("::SESSION PEERID: NotConnected")
+      connectionButton.image = UIImage(named: "disconnect")
       if outputStream != nil { outputStream.close() }
-      break
-    default: return
+      session.disconnect()
     }
   }
   
   func stream(aStream: NSStream, handleEvent eventCode: NSStreamEvent) {
     switch eventCode {
-    case NSStreamEvent.OpenCompleted, NSStreamEvent.HasSpaceAvailable, NSStreamEvent.ErrorOccurred, NSStreamEvent.None: break
     case NSStreamEvent.EndEncountered:
       aStream.close()
-      break
     case NSStreamEvent.HasBytesAvailable:
       if aStream.isKindOfClass(NSInputStream) {
         var inputStream = aStream as NSInputStream
         
-        var buffer = [UInt8](count: 16, repeatedValue: 0)
+        var buffer = [UInt8](count: 9, repeatedValue: 0)
         let result: Int = inputStream.read(&buffer, maxLength: buffer.count)
         
         switch result {
-        case 16:
+        case 9:
           var data = NSData(bytes: buffer, length: result)
-          var (percentX, percentY, color, type) = (Float(), Float(), Float(), Float())
-          
+          var (percentX, percentY, type) = (Float(), Float(), GestureType.Pan)
           data.getBytes(&percentX, range: NSMakeRange(0, 4))
           data.getBytes(&percentY, range: NSMakeRange(4, 4))
-          data.getBytes(&color, range: NSMakeRange(8, 4))
-          data.getBytes(&type, range: NSMakeRange(12, 4))
+          data.getBytes(&type, range: NSMakeRange(8, 1))
           
           let x = CGFloat(percentX * Float(view.bounds.width))
           let y = CGFloat(percentY * Float(view.bounds.height))
           
-          theirEmitter.setValue(colors[Int(color)].CGColor, forKeyPath: "emitterCells.dustCell.color")
-          if Int(type) == 0 {
+          switch type {
+          case GestureType.Pan:
             theirEmitter.emitterShape = kCAEmitterLayerPoint
-          } else {
+          case GestureType.Tap:
             theirEmitter.emitterShape = kCAEmitterLayerCircle
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), {
-              self.myEmitter.emitterPosition = CGPointMake(0, 0)
+              self.theirEmitter.emitterPosition = CGPointMake(-100,-100)
             })
           }
           theirEmitter.emitterPosition = CGPointMake(x, y)
-          return
+        case 2:
+          var data = NSData(bytes: buffer, length: result)
+          var color: DustColors = DustColors.Red
+          data.getBytes(&color, length: 2)
+          theirEmitter.setValue(color.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
         case 1:
           var data = NSData(bytes: buffer, length: result)
-          
           var start: Bool = Bool()
           data.getBytes(&start, length: 1)
-          
-          theirEmitter.emitterPosition = CGPointMake(0, 0)
-          return
+          theirEmitter.emitterPosition = CGPointMake(-100,-100)
         default: return
         }
       }
-      break
     default: return
     }
   }
   
   // MCBrowserViewControllerDelegate Methods
   func browserViewControllerDidFinish(browserViewController: MCBrowserViewController!) {
-    browserViewController.dismissViewControllerAnimated(true, completion: nil)
+    browserViewController.dismissViewControllerAnimated(true, completion: { () -> Void in
+      self.connectionButton.image = UIImage(named: self.session.connectedPeers.count >  0 ?"connect":"disconnect")
+    })
   }
   
   func browserViewControllerWasCancelled(browserViewController: MCBrowserViewController!) {
-    browserViewController.dismissViewControllerAnimated(true, completion: nil)
+    browserViewController.dismissViewControllerAnimated(true, completion: { () -> Void in
+      self.connectionButton.image = UIImage(named: self.session.connectedPeers.count >  0 ?"connect":"disconnect")
+    })
   }
   
   // MCAdvertiserAssistantDelegate Methods
-  func advertiserAssistantDidDismissInvitation(advertiserAssistant: MCAdvertiserAssistant!) {}
+  func advertiserAssistantDidDismissInvitation(advertiserAssistant: MCAdvertiserAssistant!) {
+    self.connectionButton.image = UIImage(named: self.session.connectedPeers.count >  0 ?"connect":"disconnect")
+  }
   
-  func advertiserAssistantWillPresentInvitation(advertiserAssistant: MCAdvertiserAssistant!) {}
+  func advertiserAssistantWillPresentInvitation(advertiserAssistant: MCAdvertiserAssistant!) {
+    self.connectionButton.image = UIImage(named: self.session.connectedPeers.count >  0 ?"connect":"disconnect")
+  }
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
