@@ -32,12 +32,13 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
   var session: MCSession!
   var myEmitter: CAEmitterLayer!
   var theirEmitter: CAEmitterLayer!
-  var outputStream: NSOutputStream!
   var advertiserAssistant: MCAdvertiserAssistant!
   var browserViewController: MCBrowserViewController!
   var localPeerID: MCPeerID! = MCPeerID(displayName: UIDevice.currentDevice().name)
   
   let dustServiceType: String! = "dust-service"
+  
+  var peersOutputStreams: Dictionary<String, NSOutputStream>! = Dictionary<String, NSOutputStream>()
   
   @IBOutlet var searchButton: UIBarButtonItem!
   @IBOutlet var connectionButton: UIBarButtonItem!
@@ -127,9 +128,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     connectionButton.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
     colorSegmentControl.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
     myEmitter.setValue(DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
-    
     if session.connectedPeers.count == 0 { return }
-    sendDataColor()
   }
   
   @IBAction func searchPeers(sender: UIBarButtonItem) {
@@ -145,16 +144,9 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     
     if session.connectedPeers.count == 0 { return }
     switch gestureRecognizer.state {
-    case .Began:
-      var start = true
-      var sendData = NSData(bytes: &start, length:  sizeof(Bool))
-      outputStream.write(UnsafePointer<UInt8>(sendData.bytes), maxLength: sendData.length)
-    case .Changed:
-      self.sendDataMessage(point, gestureType: .Pan)
-    case .Ended:
-      var start = false
-      var sendData = NSData(bytes: &start, length:  sizeof(Bool))
-      outputStream.write(UnsafePointer<UInt8>(sendData.bytes), maxLength: sendData.length)
+    case .Began: sendDataStart(true)
+    case .Changed: sendDataMessage(point, gestureType: .Pan)
+    case .Ended: sendDataStart(false)
     default: return
     }
   }
@@ -170,7 +162,13 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     })
     
     if session.connectedPeers.count == 0 { return }
-    self.sendDataMessage(point, gestureType: .Tap)
+    sendDataMessage(point, gestureType: .Tap)
+  }
+  
+  func sendDataStart(shouldStart: Bool) {
+    var start = shouldStart
+    var sendData = NSData(bytes: &start, length:  sizeof(Bool))
+    writeBytesToAllOutputStreams(sendData.copy() as NSData)
   }
   
   func sendDataMessage(point: CGPoint, gestureType: GestureType) {
@@ -178,21 +176,30 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     var percentX = Float(point.x/view.bounds.width)
     var percentY = Float(point.y/view.bounds.height)
     var type = gestureType
-
+    var color: DustColors = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)!
+    
     sendData.appendBytes(&percentX, length: sizeof(Float))
     sendData.appendBytes(&percentY, length: sizeof(Float))
     sendData.appendBytes(&type, length: sizeof(GestureType))
+    sendData.appendBytes(&color, length: sizeof(DustColors))
     
     if session.connectedPeers.count == 0 { return }
-    outputStream.write(UnsafePointer<UInt8>(sendData.bytes), maxLength: sendData.length)
+    writeBytesToAllOutputStreams(sendData.copy() as NSData)
   }
   
   func sendDataColor() {
     var sendData = NSMutableData()
-    var color: DustColors = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)!
-    sendData.appendBytes(&color, length: 2)
-    outputStream.write(UnsafePointer<UInt8>(sendData.bytes), maxLength: sendData.length)
+    
+    
+    writeBytesToAllOutputStreams(sendData.copy() as NSData)
   }
+  
+  func writeBytesToAllOutputStreams(sendData: NSData) {
+    for outputStream: NSOutputStream in peersOutputStreams.values {
+      outputStream.write(UnsafePointer<UInt8>(sendData.bytes), maxLength: sendData.length)
+    }
+  }
+  
   
   // MCSessionDelegate Methods
   func session(session: MCSession!, didReceiveData data: NSData!, fromPeer peerID: MCPeerID!) {}
@@ -202,7 +209,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
   func session(session: MCSession!, didFinishReceivingResourceWithName resourceName: String!, fromPeer peerID: MCPeerID!, atURL localURL: NSURL!, withError error: NSError!) {}
   
   func session(session: MCSession!, didReceiveStream stream: NSInputStream!, withName streamName: String!, fromPeer peerID: MCPeerID!) {
-    stream.delegate = self;
+    stream.delegate = self
     stream.scheduleInRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
     stream.open()
   }
@@ -211,16 +218,18 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     switch state {
     case .Connected:
       connectionButton.image = UIImage(named: "connect")
-      outputStream = session.startStreamWithName("dust-stream", toPeer: peerID, error: nil)
-      outputStream.delegate = self;
-      outputStream.scheduleInRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
-      outputStream.open()
-      sendDataColor()
+      
+      peersOutputStreams[peerID.displayName] = session.startStreamWithName("dust-stream", toPeer: peerID, error: nil)
+      
+      peersOutputStreams[peerID.displayName]!.delegate = self
+      peersOutputStreams[peerID.displayName]!.scheduleInRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+      peersOutputStreams[peerID.displayName]!.open()
     case MCSessionState.Connecting:
       connectionButton.image = UIImage(named: "disconnect")
     case MCSessionState.NotConnected:
       connectionButton.image = UIImage(named: "disconnect")
-      if outputStream != nil { outputStream.close() }
+      if peersOutputStreams[peerID.displayName] != nil { peersOutputStreams[peerID.displayName]!.close() }
+      peersOutputStreams.removeValueForKey(peerID.displayName)
       session.disconnect()
     }
   }
@@ -233,20 +242,22 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
       if aStream.isKindOfClass(NSInputStream) {
         var inputStream = aStream as NSInputStream
         
-        var buffer = [UInt8](count: 9, repeatedValue: 0)
+        var buffer = [UInt8](count: 10, repeatedValue: 0)
         let result: Int = inputStream.read(&buffer, maxLength: buffer.count)
         
         switch result {
-        case 9:
+        case 10:
           var data = NSData(bytes: buffer, length: result)
-          var (percentX, percentY, type) = (Float(), Float(), GestureType.Pan)
+          var (percentX, percentY, type, color) = (Float(), Float(), GestureType.Pan, DustColors.Red)
           data.getBytes(&percentX, range: NSMakeRange(0, 4))
           data.getBytes(&percentY, range: NSMakeRange(4, 4))
           data.getBytes(&type, range: NSMakeRange(8, 1))
+          data.getBytes(&color, range: NSMakeRange(9, 1))
           
           let x = CGFloat(percentX * Float(view.bounds.width))
           let y = CGFloat(percentY * Float(view.bounds.height))
           
+          theirEmitter.setValue(color.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
           switch type {
           case GestureType.Pan:
             theirEmitter.emitterShape = kCAEmitterLayerPoint
@@ -257,11 +268,6 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             })
           }
           theirEmitter.emitterPosition = CGPointMake(x, y)
-        case 2:
-          var data = NSData(bytes: buffer, length: result)
-          var color: DustColors = DustColors.Red
-          data.getBytes(&color, length: 2)
-          theirEmitter.setValue(color.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
         case 1:
           var data = NSData(bytes: buffer, length: result)
           var start: Bool = Bool()
