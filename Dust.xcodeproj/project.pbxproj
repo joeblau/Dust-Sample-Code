@@ -87,12 +87,12 @@
 			children = (
 				E64333AF19C3693300BFDD88 /* AppDelegate.swift */,
 				E64333B119C3693300BFDD88 /* ViewController.swift */,
+				E6B661511A26EAF00062D7BC /* MeshNetwork.swift */,
 				E64333B319C3693300BFDD88 /* Main.storyboard */,
 				E64333B619C3693300BFDD88 /* Images.xcassets */,
 				E64333B819C3693300BFDD88 /* LaunchScreen.xib */,
 				E64333AD19C3693300BFDD88 /* Supporting Files */,
 				E699E1F119D05F470086E793 /* LaunchScreenView.swift */,
-				E6B661511A26EAF00062D7BC /* MeshNetwork.swift */,
 			);
 			path = Dust;
 			sourceTree = "<group>";
@@ -285,6 +285,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -328,6 +329,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
