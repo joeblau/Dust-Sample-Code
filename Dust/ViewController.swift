@@ -35,7 +35,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
   var advertiserAssistant: MCAdvertiserAssistant!
   var browserViewController: MCBrowserViewController!
   var localPeerID: MCPeerID! = MCPeerID(displayName: UIDevice.currentDevice().name)
-  
+  var inputStream: NSInputStream!
   let dustServiceType: String! = "dust-service"
   
   var peersOutputStreams: Dictionary<String, NSOutputStream>! = Dictionary<String, NSOutputStream>()
@@ -58,21 +58,21 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     
     view.addGestureRecognizer(panGesture)
     view.addGestureRecognizer(tapGesture)
-    
+
     // Create the session that peers will be invited/join into.
     session = MCSession(peer: self.localPeerID, securityIdentity: nil, encryptionPreference: .None)
     session.delegate = self
     
     browserViewController = MCBrowserViewController(serviceType: dustServiceType, session: session)
     browserViewController.delegate = self
-    
+
     advertiserAssistant = MCAdvertiserAssistant(serviceType: dustServiceType, discoveryInfo: nil, session: session)
     advertiserAssistant.delegate = self
     advertiserAssistant.start()
-    
-    searchButton.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
-    connectionButton.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
-    colorSegmentControl.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
+
+    searchButton.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
+    connectionButton.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
+    colorSegmentControl.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
 
     myEmitter = createEmmitter()
     theirEmitter = createEmmitter()
@@ -95,7 +95,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     newEmitterCell.birthRate = 1000
     newEmitterCell.lifetime = 6.0
     newEmitterCell.lifetimeRange = 0.5
-    newEmitterCell.color = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get().CGColor
+    newEmitterCell.color = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get().CGColor
     newEmitterCell.redSpeed = 0.000
     newEmitterCell.greenSpeed = 0.000
     newEmitterCell.blueSpeed = 0.000
@@ -104,7 +104,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     newEmitterCell.greenRange = 0.000
     newEmitterCell.blueRange = 0.000
     newEmitterCell.alphaRange = 0.000
-    newEmitterCell.contents = UIImage(named: "particle").CGImage
+    newEmitterCell.contents = UIImage(named: "particle")?.CGImage
     newEmitterCell.emissionRange = CGFloat(2.000*M_PI)
     newEmitterCell.emissionLatitude = CGFloat(0.000*M_PI)
     newEmitterCell.emissionLongitude = CGFloat(0.000*M_PI)
@@ -124,10 +124,10 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
   }
   
   @IBAction func selectColor(sender: UISegmentedControl) {
-    searchButton.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
-    connectionButton.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
-    colorSegmentControl.tintColor = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get()
-    myEmitter.setValue(DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)?.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
+    searchButton.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
+    connectionButton.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
+    colorSegmentControl.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
+    myEmitter.setValue(DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
     if session.connectedPeers.count == 0 { return }
   }
   
@@ -176,8 +176,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     var percentX = Float(point.x/view.bounds.width)
     var percentY = Float(point.y/view.bounds.height)
     var type = gestureType
-    var color: DustColors = DustColors.fromRaw(colorSegmentControl.selectedSegmentIndex)!
-    
+    var color: DustColors = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)!
     sendData.appendBytes(&percentX, length: sizeof(Float))
     sendData.appendBytes(&percentY, length: sizeof(Float))
     sendData.appendBytes(&type, length: sizeof(GestureType))
@@ -189,8 +188,6 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
   
   func sendDataColor() {
     var sendData = NSMutableData()
-    
-    
     writeBytesToAllOutputStreams(sendData.copy() as NSData)
   }
   
@@ -209,44 +206,47 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
   func session(session: MCSession!, didFinishReceivingResourceWithName resourceName: String!, fromPeer peerID: MCPeerID!, atURL localURL: NSURL!, withError error: NSError!) {}
   
   func session(session: MCSession!, didReceiveStream stream: NSInputStream!, withName streamName: String!, fromPeer peerID: MCPeerID!) {
+    // Called when a peer establishes a stream with us
+    println("Peer \(peerID) established connection with stream name \(streamName)")
     stream.delegate = self
-    stream.scheduleInRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+    stream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
     stream.open()
   }
   
   func session(session: MCSession!, peer peerID: MCPeerID!, didChangeState state: MCSessionState) {
+    // Called when a connected peer changes state (for example, goes offline)
+    println("Peer \(peerID) connection state changed to \(state.rawValue)")
     switch state {
-    case .Connected:
-      connectionButton.image = UIImage(named: "connect")
-      
-      peersOutputStreams[peerID.displayName] = session.startStreamWithName("dust-stream", toPeer: peerID, error: nil)
-      
-      peersOutputStreams[peerID.displayName]!.delegate = self
-      peersOutputStreams[peerID.displayName]!.scheduleInRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
-      peersOutputStreams[peerID.displayName]!.open()
-    case MCSessionState.Connecting:
-      connectionButton.image = UIImage(named: "disconnect")
     case MCSessionState.NotConnected:
       connectionButton.image = UIImage(named: "disconnect")
       if peersOutputStreams[peerID.displayName] != nil { peersOutputStreams[peerID.displayName]!.close() }
       peersOutputStreams.removeValueForKey(peerID.displayName)
       session.disconnect()
+    case MCSessionState.Connecting:
+      connectionButton.image = UIImage(named: "disconnect")
+    case .Connected:
+      connectionButton.image = UIImage(named: "connect")
+      peersOutputStreams[peerID.displayName] = session.startStreamWithName("dust-stream", toPeer: peerID, error: nil)
+      peersOutputStreams[peerID.displayName]!.delegate = self
+      peersOutputStreams[peerID.displayName]!.scheduleInRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+      peersOutputStreams[peerID.displayName]!.open()
+
     }
   }
   
   func stream(aStream: NSStream, handleEvent eventCode: NSStreamEvent) {
     switch eventCode {
     case NSStreamEvent.EndEncountered:
+      println("CLOSE")
       aStream.close()
+      break
     case NSStreamEvent.HasBytesAvailable:
-      if aStream.isKindOfClass(NSInputStream) {
-        var inputStream = aStream as NSInputStream
-        
-        var buffer = [UInt8](count: 10, repeatedValue: 0)
+        var buffer = [UInt8](count: 10, repeatedValue: 10)
         let result: Int = inputStream.read(&buffer, maxLength: buffer.count)
         
         switch result {
         case 10:
+//          println("TIME \(mach_absolute_time())")
           var data = NSData(bytes: buffer, length: result)
           var (percentX, percentY, type, color) = (Float(), Float(), GestureType.Pan, DustColors.Red)
           data.getBytes(&percentX, range: NSMakeRange(0, 4))
@@ -257,25 +257,32 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
           let x = CGFloat(percentX * Float(view.bounds.width))
           let y = CGFloat(percentY * Float(view.bounds.height))
           
-          theirEmitter.setValue(color.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
+//          self.theirEmitter.setValue(color.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
           switch type {
           case GestureType.Pan:
-            theirEmitter.emitterShape = kCAEmitterLayerPoint
+            self.theirEmitter.emitterShape = kCAEmitterLayerPoint
           case GestureType.Tap:
-            theirEmitter.emitterShape = kCAEmitterLayerCircle
+            self.theirEmitter.emitterShape = kCAEmitterLayerCircle
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), {
               self.theirEmitter.emitterPosition = CGPointMake(-100,-100)
             })
           }
-          theirEmitter.emitterPosition = CGPointMake(x, y)
+          self.theirEmitter.emitterPosition = CGPointMake(x, y)
+          
         case 1:
           var data = NSData(bytes: buffer, length: result)
           var start: Bool = Bool()
           data.getBytes(&start, length: 1)
-          theirEmitter.emitterPosition = CGPointMake(-100,-100)
+          self.theirEmitter.emitterPosition = CGPointMake(-100,-100)
         default: return
         }
+
+      break
+    case NSStreamEvent.OpenCompleted:
+      if aStream.isKindOfClass(NSInputStream) {
+        inputStream = aStream as NSInputStream
       }
+      break
     default: return
     }
   }

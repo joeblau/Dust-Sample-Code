@@ -14,6 +14,8 @@
 		E64333B719C3693300BFDD88 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E64333B619C3693300BFDD88 /* Images.xcassets */; };
 		E64333BA19C3693300BFDD88 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E64333B819C3693300BFDD88 /* LaunchScreen.xib */; };
 		E64333C619C3693300BFDD88 /* DustTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64333C519C3693300BFDD88 /* DustTests.swift */; };
+		E699E1F219D05F470086E793 /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E699E1F119D05F470086E793 /* LaunchScreenView.swift */; };
+		E6B661521A26EAF00062D7BC /* MeshNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B661511A26EAF00062D7BC /* MeshNetwork.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +40,8 @@
 		E64333BF19C3693300BFDD88 /* DustTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DustTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E64333C419C3693300BFDD88 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E64333C519C3693300BFDD88 /* DustTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DustTests.swift; sourceTree = "<group>"; };
+		E699E1F119D05F470086E793 /* LaunchScreenView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
+		E6B661511A26EAF00062D7BC /* MeshNetwork.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshNetwork.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +91,8 @@
 				E64333B619C3693300BFDD88 /* Images.xcassets */,
 				E64333B819C3693300BFDD88 /* LaunchScreen.xib */,
 				E64333AD19C3693300BFDD88 /* Supporting Files */,
+				E699E1F119D05F470086E793 /* LaunchScreenView.swift */,
+				E6B661511A26EAF00062D7BC /* MeshNetwork.swift */,
 			);
 			path = Dust;
 			sourceTree = "<group>";
@@ -219,6 +225,8 @@
 			files = (
 				E64333B219C3693300BFDD88 /* ViewController.swift in Sources */,
 				E64333B019C3693300BFDD88 /* AppDelegate.swift in Sources */,
+				E699E1F219D05F470086E793 /* LaunchScreenView.swift in Sources */,
+				E6B661521A26EAF00062D7BC /* MeshNetwork.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
