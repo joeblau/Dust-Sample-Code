@@ -62,7 +62,6 @@ class MeshNetwork: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiserDelegat
     }
     
     // MARK: communication
-    
     func sendData(data: NSData, mode: MCSessionSendDataMode, error: NSErrorPointer) -> Bool {
         return session.sendData(data, toPeers: session.connectedPeers, withMode: mode, error: error)
     }
@@ -85,28 +84,24 @@ class MeshNetwork: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiserDelegat
     }
     
     var session: MCSession! {
-        if _session != nil { return _session }
-        _session = MCSession(peer: self.peerID, securityIdentity: nil, encryptionPreference: .None)
-        _session.delegate = self
+        _session = _session ?? MCSession(peer: self.peerID, securityIdentity: nil, encryptionPreference: .None)
+        _session.delegate = _session.delegate ?? self
         return _session
     }
     
     var peerID: MCPeerID! {
-        if _peerID != nil { return _peerID }
-        _peerID = MCPeerID(displayName: self.displayName)
+        _peerID = _peerID ?? MCPeerID(displayName: self.displayName)
         return _peerID
     }
     var serviceAdvertiser: MCNearbyServiceAdvertiser! {
-        if _serviceAdvertiser != nil { return _serviceAdvertiser }
-        _serviceAdvertiser = MCNearbyServiceAdvertiser(peer: self.peerID, discoveryInfo: nil, serviceType: self.serviceType)
-        _serviceAdvertiser.delegate = self
+        _serviceAdvertiser = _serviceAdvertiser ?? MCNearbyServiceAdvertiser(peer: self.peerID, discoveryInfo: nil, serviceType: self.serviceType)
+        _serviceAdvertiser.delegate = _serviceAdvertiser.delegate ?? self
         return _serviceAdvertiser
     }
     
     var serviceBrowser: MCNearbyServiceBrowser! {
-        if _serviceBrowser != nil { return _serviceBrowser }
-        _serviceBrowser = MCNearbyServiceBrowser(peer: self.peerID, serviceType: self.serviceType)
-        _serviceBrowser.delegate = self
+        _serviceBrowser = _serviceBrowser ?? MCNearbyServiceBrowser(peer: self.peerID, serviceType: self.serviceType)
+        _serviceBrowser.delegate =  _serviceBrowser.delegate ?? self
         return _serviceBrowser
     }
     
@@ -146,7 +141,6 @@ class MeshNetwork: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiserDelegat
     }
     
     // MARK: Advertiser Delegate
-    
     func advertiser(advertiser: MCNearbyServiceAdvertiser!, didReceiveInvitationFromPeer peerID: MCPeerID!, withContext context: NSData!, invitationHandler: ((Bool, MCSession!) -> Void)!) {
         if (peerID.displayName < self.peerID.displayName) {
             invitationHandler(true, self.session)
@@ -169,8 +163,4 @@ class MeshNetwork: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiserDelegat
     func browser(browser: MCNearbyServiceBrowser!, didNotStartBrowsingForPeers error: NSError!) {
         delegate.meshNetwork(self, failedToJoinMesh: error)
     }
-    
 }
-
-
-

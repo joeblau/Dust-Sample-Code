@@ -8,6 +8,7 @@
 
 import UIKit
 import MultipeerConnectivity
+import PKHUD
 
 enum GestureType {
     case Pan, Tap, End
@@ -33,7 +34,6 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
     var myEmitter: CAEmitterLayer!
     var theirEmitter: CAEmitterLayer!
     
-    
     var meshNetwork: MeshNetwork = MeshNetwork(serviceType: "Dust-Service")
     
     var peersOutputStreams: Dictionary<String, NSOutputStream>! = Dictionary<String, NSOutputStream>()
@@ -42,10 +42,10 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
     @IBOutlet weak var connectedPeerCount: UIBarButtonItem!
     @IBOutlet weak var colorSegmentControl: UISegmentedControl!
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.blackColor()
+        HUDController.sharedController.userInteractionOnUnderlyingViewsEnabled = true
+        
         let panGesture = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
         panGesture.minimumNumberOfTouches = 1
         panGesture.delegate = self
@@ -65,53 +65,12 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
         connectedPeerCount.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
         colorSegmentControl.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
         
-        myEmitter = createEmmitter()
-        theirEmitter = createEmmitter()
-    }
-    
-    func createEmmitter() -> CAEmitterLayer {
-        var newEmitterLayer = CAEmitterLayer()
-        newEmitterLayer.emitterPosition = CGPointMake(-100,-100)
-        newEmitterLayer.emitterSize = CGSizeMake(60.0,1)
-        newEmitterLayer.emitterMode = kCAEmitterLayerOutline
-        newEmitterLayer.emitterShape = kCAEmitterLayerPoint
-        newEmitterLayer.renderMode = kCAEmitterLayerAdditive
-        newEmitterLayer.shadowOpacity = 0.0
-        newEmitterLayer.shadowRadius = 0.0
-        newEmitterLayer.shadowOffset = CGSizeMake(0,0)
-        newEmitterLayer.shadowColor = UIColor.whiteColor().CGColor
+        let emitterColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
+        myEmitter = CAEmitterLayer(emitterColor: emitterColor)
+        view.layer.addSublayer(myEmitter)
         
-        var newEmitterCell = CAEmitterCell()
-        newEmitterCell.name = "dustCell"
-        newEmitterCell.birthRate = 1000
-        newEmitterCell.lifetime = 6.0
-        newEmitterCell.lifetimeRange = 0.5
-        newEmitterCell.color = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get().CGColor
-        newEmitterCell.redSpeed = 0.000
-        newEmitterCell.greenSpeed = 0.000
-        newEmitterCell.blueSpeed = 0.000
-        newEmitterCell.alphaSpeed = 0.000
-        newEmitterCell.redRange = 0.581
-        newEmitterCell.greenRange = 0.000
-        newEmitterCell.blueRange = 0.000
-        newEmitterCell.alphaRange = 0.000
-        newEmitterCell.contents = UIImage(named: "particle")?.CGImage
-        newEmitterCell.emissionRange = CGFloat(2.000*M_PI)
-        newEmitterCell.emissionLatitude = CGFloat(0.000*M_PI)
-        newEmitterCell.emissionLongitude = CGFloat(0.000*M_PI)
-        newEmitterCell.velocity = 1
-        newEmitterCell.velocityRange = 1
-        newEmitterCell.xAcceleration = 0
-        newEmitterCell.yAcceleration = 0
-        newEmitterCell.spin = CGFloat(0.0*M_PI)
-        newEmitterCell.spinRange = CGFloat(0.01*M_PI)
-        newEmitterCell.scale = 3.0/UIScreen.mainScreen().scale
-        newEmitterCell.scaleSpeed = 0.0
-        newEmitterCell.scaleRange = 5.0
-        
-        newEmitterLayer.emitterCells = [newEmitterCell]
-        view.layer.addSublayer(newEmitterLayer)
-        return newEmitterLayer
+        theirEmitter = CAEmitterLayer(emitterColor: emitterColor)
+        view.layer.addSublayer(theirEmitter)
     }
     
     @IBAction func selectColor(sender: UISegmentedControl) {
@@ -123,9 +82,9 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
 
     func handlePanGesture(gestureRecognizer: UIPanGestureRecognizer) {
         let point = gestureRecognizer.locationInView(self.view)
-        
         myEmitter.emitterPosition = (gestureRecognizer.state == .Ended) ?CGPointMake(-100,-100):point
         myEmitter.emitterShape = kCAEmitterLayerPoint
+        
         switch gestureRecognizer.state {
         case .Began, .Changed: sendDataMessage(point, gestureType: .Pan)
         case .Ended: sendDataMessage(point, gestureType: .End)
@@ -135,7 +94,6 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
     
     func handleTapGesture(gestureRecoginzer: UITapGestureRecognizer) {
         let point = gestureRecoginzer.locationInView(self.view)
-        
         myEmitter.emitterPosition = point
         myEmitter.emitterShape = kCAEmitterLayerCircle
         
@@ -163,24 +121,31 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
 
     // MARK: Mesh Network Delegate
     func meshNetwork(meshNetwork: MeshNetwork, peer peerID: MCPeerID, changedState state: MCSessionState, currentPeers: [AnyObject]) {
-        self.connectionButton.image = UIImage(named: currentPeers.count >  0 ?"connect":"disconnect")
-        self.connectedPeerCount.title = "\(currentPeers.count)"
+        if currentPeers.count >  0 {
+            HUDController.sharedController.contentView = HUDContentView.StatusView(title: peerID.displayName, subtitle: "Connected", image: HUDAssets.checkmarkImage)
+            HUDController.sharedController.show()
+            HUDController.sharedController.hide(afterDelay: 4.0)
+        }
+        connectionButton.image = UIImage(named: currentPeers.count >  0 ?"connect":"disconnect")
+        connectedPeerCount.title = "\(currentPeers.count)"
     }
     
-    func meshNetwork(meshNetwork: MeshNetwork, failedToJoinMesh error: NSError) {}
+    func meshNetwork(meshNetwork: MeshNetwork, failedToJoinMesh error: NSError) {
+        HUDController.sharedController.contentView = HUDContentView.SubtitleView(subtitle: "Error", image: HUDAssets.crossImage)
+        HUDController.sharedController.show()
+        HUDController.sharedController.hide(afterDelay: 4.0)
+    }
     
     func meshNetwork(meshNetwork: MeshNetwork, didReceiveData data: NSData, fromPeer peerdID: MCPeerID) {
-
         var (percentX, percentY, type, color) = (Float(), Float(), GestureType.Pan, DustColors.Red)
         data.getBytes(&percentX, range: NSMakeRange(0, 4))
         data.getBytes(&percentY, range: NSMakeRange(4, 4))
         data.getBytes(&type, range: NSMakeRange(8, 1))
         data.getBytes(&color, range: NSMakeRange(9, 1))
 
-        
         let x = CGFloat(percentX * Float(view.bounds.width))
         let y = CGFloat(percentY * Float(view.bounds.height))
-        self.theirEmitter.setValue(color.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
+        theirEmitter.setValue(color.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
         switch type {
         case .Pan:
             theirEmitter.emitterShape = kCAEmitterLayerPoint
@@ -192,125 +157,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
                 self.theirEmitter.emitterPosition = CGPointMake(-100,-100)
             })
         case .End:
-            self.theirEmitter.emitterPosition = CGPointMake(-100,-100)
+            theirEmitter.emitterPosition = CGPointMake(-100,-100)
         }
-        // Move their emmitter off screen
-        
     }
-    
-    
-//    // MCSessionDelegate Methods
-//    func session(session: MCSession!, didReceiveData data: NSData!, fromPeer peerID: MCPeerID!) {}
-//    
-//    func session(session: MCSession!, didStartReceivingResourceWithName resourceName: String!, fromPeer peerID: MCPeerID!, withProgress progress: NSProgress!) {}
-//    
-//    func session(session: MCSession!, didFinishReceivingResourceWithName resourceName: String!, fromPeer peerID: MCPeerID!, atURL localURL: NSURL!, withError error: NSError!) {}
-//    
-//    func session(session: MCSession!, didReceiveStream stream: NSInputStream!, withName streamName: String!, fromPeer peerID: MCPeerID!) {
-//        // Called when a peer establishes a stream with us
-//        println("Peer \(peerID) established connection with stream name \(streamName)")
-//        stream.delegate = self
-//        stream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
-//        stream.open()
-//    }
-//    
-//    func session(session: MCSession!, peer peerID: MCPeerID!, didChangeState state: MCSessionState) {
-//        // Called when a connected peer changes state (for example, goes offline)
-//        println("Peer \(peerID) connection state changed to \(state.rawValue)")
-//        switch state {
-//        case MCSessionState.NotConnected:
-//            connectionButton.image = UIImage(named: "disconnect")
-//            if peersOutputStreams[peerID.displayName] != nil { peersOutputStreams[peerID.displayName]!.close() }
-//            peersOutputStreams.removeValueForKey(peerID.displayName)
-//            session.disconnect()
-//        case MCSessionState.Connecting:
-//            connectionButton.image = UIImage(named: "disconnect")
-//        case .Connected:
-//            connectionButton.image = UIImage(named: "connect")
-//            peersOutputStreams[peerID.displayName] = session.startStreamWithName("dust-stream", toPeer: peerID, error: nil)
-//            peersOutputStreams[peerID.displayName]!.delegate = self
-//            peersOutputStreams[peerID.displayName]!.scheduleInRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
-//            peersOutputStreams[peerID.displayName]!.open()
-//            
-//        }
-//    }
-//    
-//    func stream(aStream: NSStream, handleEvent eventCode: NSStreamEvent) {
-//        switch eventCode {
-//        case NSStreamEvent.EndEncountered:
-//            println("CLOSE")
-//            aStream.close()
-//            break
-//        case NSStreamEvent.HasBytesAvailable:
-//            var buffer = [UInt8](count: 10, repeatedValue: 10)
-//            let result: Int = inputStream.read(&buffer, maxLength: buffer.count)
-//            
-//            switch result {
-//            case 10:
-//                //          println("TIME \(mach_absolute_time())")
-//                var data = NSData(bytes: buffer, length: result)
-//                var (percentX, percentY, type, color) = (Float(), Float(), GestureType.Pan, DustColors.Red)
-//                data.getBytes(&percentX, range: NSMakeRange(0, 4))
-//                data.getBytes(&percentY, range: NSMakeRange(4, 4))
-//                data.getBytes(&type, range: NSMakeRange(8, 1))
-//                data.getBytes(&color, range: NSMakeRange(9, 1))
-//
-//                let x = CGFloat(percentX * Float(view.bounds.width))
-//                let y = CGFloat(percentY * Float(view.bounds.height))
-//                
-//                //          self.theirEmitter.setValue(color.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
-//                switch type {
-//                case GestureType.Pan:
-//                    self.theirEmitter.emitterShape = kCAEmitterLayerPoint
-//                case GestureType.Tap:
-//                    self.theirEmitter.emitterShape = kCAEmitterLayerCircle
-//                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), {
-//                        self.theirEmitter.emitterPosition = CGPointMake(-100,-100)
-//                    })
-//                }
-//                self.theirEmitter.emitterPosition = CGPointMake(x, y)
-//
-//            case 1:
-//                var data = NSData(bytes: buffer, length: result)
-//                var start: Bool = Bool()
-//                data.getBytes(&start, length: 1)
-//                self.theirEmitter.emitterPosition = CGPointMake(-100,-100)
-//            default: return
-//            }
-//            
-//            break
-//        case NSStreamEvent.OpenCompleted:
-//            if aStream.isKindOfClass(NSInputStream) {
-//                inputStream = aStream as NSInputStream
-//            }
-//            break
-//        default: return
-//        }
-//    }
-//    
-//    // MCBrowserViewControllerDelegate Methods
-//    func browserViewControllerDidFinish(browserViewController: MCBrowserViewController!) {
-//        browserViewController.dismissViewControllerAnimated(true, completion: { () -> Void in
-//            self.connectionButton.image = UIImage(named: self.session.connectedPeers.count >  0 ?"connect":"disconnect")
-//        })
-//    }
-//    
-//    func browserViewControllerWasCancelled(browserViewController: MCBrowserViewController!) {
-//        browserViewController.dismissViewControllerAnimated(true, completion: { () -> Void in
-//            self.connectionButton.image = UIImage(named: self.session.connectedPeers.count >  0 ?"connect":"disconnect")
-//        })
-//    }
-//    
-//    // MCAdvertiserAssistantDelegate Methods
-//    func advertiserAssistantDidDismissInvitation(advertiserAssistant: MCAdvertiserAssistant!) {
-//        self.connectionButton.image = UIImage(named: self.session.connectedPeers.count >  0 ?"connect":"disconnect")
-//    }
-//    
-//    func advertiserAssistantWillPresentInvitation(advertiserAssistant: MCAdvertiserAssistant!) {
-//
-//    }
-//    
-//    override func didReceiveMemoryWarning() {
-//        super.didReceiveMemoryWarning()
-//    }
 }
