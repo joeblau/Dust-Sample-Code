@@ -38,6 +38,9 @@
                         <nil key="title"/>
                         <barButtonItem key="leftBarButtonItem" image="disconnect" style="plain" id="UFM-Oj-5eM">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="connect:" destination="BYZ-38-t0r" id="UYC-vX-dza"/>
+                            </connections>
                         </barButtonItem>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="U8j-BL-sOf">
                             <rect key="frame" x="114.5" y="7" width="371" height="30"/>

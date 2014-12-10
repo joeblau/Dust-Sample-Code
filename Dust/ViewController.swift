@@ -121,11 +121,10 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
 
     // MARK: Mesh Network Delegate
     func meshNetwork(meshNetwork: MeshNetwork, peer peerID: MCPeerID, changedState state: MCSessionState, currentPeers: [AnyObject]) {
-        if currentPeers.count >  0 {
-            HUDController.sharedController.contentView = HUDContentView.StatusView(title: peerID.displayName, subtitle: "Connected", image: HUDAssets.checkmarkImage)
-            HUDController.sharedController.show()
-            HUDController.sharedController.hide(afterDelay: 4.0)
-        }
+        let (status, image) = (state == .NotConnected) ? ("Disconnected", HUDAssets.crossImage) : ("Connected", HUDAssets.checkmarkImage)
+        HUDController.sharedController.contentView = HUDContentView.StatusView(title: peerID.displayName, subtitle: status, image: image)
+        HUDController.sharedController.show()
+        HUDController.sharedController.hide(afterDelay: 4.0)
         connectionButton.image = UIImage(named: currentPeers.count >  0 ?"connect":"disconnect")
         connectedPeerCount.title = "\(currentPeers.count)"
     }
@@ -160,4 +159,13 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
             theirEmitter.emitterPosition = CGPointMake(-100,-100)
         }
     }
+    
+    @IBAction func connect(sender: UIBarButtonItem) {
+        if meshNetwork.connectedPeers.count == 0 {
+            meshNetwork.joinMesh()
+        } else {
+            meshNetwork.leaveMesh()
+        }
+    }
+    
 }
