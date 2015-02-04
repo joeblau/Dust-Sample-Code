@@ -44,7 +44,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        UIApplication.sharedApplication().statusBarStyle = UIStatusBarStyle.Default
+        view.backgroundColor = UIColor(red: 0.067, green: 0.067, blue: 0.067, alpha: 1.0)
         UIApplication.sharedApplication().setStatusBarHidden(false, withAnimation: .Fade)
         
         HUDController.sharedController.userInteractionOnUnderlyingViewsEnabled = true
@@ -172,17 +172,4 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
             meshNetwork.leaveMesh()
         }
     }
-    
-    @IBAction func setBackgroundColor(sender: AnyObject) {
-        if view.backgroundColor == UIColor.whiteColor() {
-            view.backgroundColor = UIColor(red: 0.067, green: 0.067, blue: 0.067, alpha: 1.0)
-            navigationController?.navigationBar.barStyle = UIBarStyle.Black
-            UIApplication.sharedApplication().statusBarStyle = UIStatusBarStyle.BlackOpaque
-        } else {
-            view.backgroundColor = UIColor.whiteColor()
-            navigationController?.navigationBar.barStyle = UIBarStyle.Default
-            UIApplication.sharedApplication().statusBarStyle = UIStatusBarStyle.Default
-        }
-    }
-
 }

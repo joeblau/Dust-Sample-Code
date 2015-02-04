@@ -15,9 +15,22 @@
                     <view key="view" contentMode="scaleToFill" id="roO-di-fOa">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dust" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sto-MS-VCt">
+                                <rect key="frame" x="233.5" y="263.5" width="133.5" height="72"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="60"/>
+                                <color key="textColor" red="0.066666666666666666" green="0.066666666666666666" blue="0.066666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="centerY" secondItem="Sto-MS-VCt" secondAttribute="centerY" constant="0.5" id="3Qz-0L-gQx"/>
+                            <constraint firstAttribute="centerX" secondItem="Sto-MS-VCt" secondAttribute="centerX" id="AWG-46-ZhU"/>
+                        </constraints>
                     </view>
                     <connections>
+                        <outlet property="titleLabel" destination="Sto-MS-VCt" id="CmR-cX-PRM"/>
                         <segue destination="Wdg-Sy-zG8" kind="presentation" identifier="startDust" modalTransitionStyle="crossDissolve" id="eTb-RH-M4d"/>
                     </connections>
                 </viewController>
@@ -29,7 +42,8 @@
         <scene sceneID="fB3-es-onp">
             <objects>
                 <navigationController id="Wdg-Sy-zG8" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="RHS-tF-D6W">
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="RHS-tF-D6W">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -77,11 +91,7 @@
                                 <action selector="selectColor:" destination="BYZ-38-t0r" eventType="valueChanged" id="SGx-ej-7BA"/>
                             </connections>
                         </segmentedControl>
-                        <barButtonItem key="rightBarButtonItem" title="0" id="HFp-TY-UEc">
-                            <connections>
-                                <action selector="setBackgroundColor:" destination="BYZ-38-t0r" id="DdJ-1z-Sdy"/>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="0" id="HFp-TY-UEc"/>
                     </navigationItem>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="600" height="600"/>
