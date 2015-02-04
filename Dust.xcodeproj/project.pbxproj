@@ -13,12 +13,21 @@
 		E64333B719C3693300BFDD88 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E64333B619C3693300BFDD88 /* Images.xcassets */; };
 		E64333BA19C3693300BFDD88 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E64333B819C3693300BFDD88 /* LaunchScreen.xib */; };
 		E64333C619C3693300BFDD88 /* DustTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64333C519C3693300BFDD88 /* DustTests.swift */; };
+		E681C4891A813DA100CAC0B3 /* PKHUD.h in Headers */ = {isa = PBXBuildFile; fileRef = E681C4881A813DA100CAC0B3 /* PKHUD.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E681C4A91A813DEE00CAC0B3 /* FrameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E681C4A31A813DEE00CAC0B3 /* FrameView.swift */; };
+		E681C4AA1A813DEE00CAC0B3 /* HUDAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = E681C4A41A813DEE00CAC0B3 /* HUDAssets.swift */; };
+		E681C4AB1A813DEE00CAC0B3 /* HUDContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E681C4A51A813DEE00CAC0B3 /* HUDContentView.swift */; };
+		E681C4AC1A813DEE00CAC0B3 /* HUDController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E681C4A61A813DEE00CAC0B3 /* HUDController.swift */; };
+		E681C4AD1A813DEE00CAC0B3 /* Window.swift in Sources */ = {isa = PBXBuildFile; fileRef = E681C4A71A813DEE00CAC0B3 /* Window.swift */; };
+		E681C4AE1A813DEE00CAC0B3 /* WindowRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E681C4A81A813DEE00CAC0B3 /* WindowRootViewController.swift */; };
+		E681C4B01A813DF800CAC0B3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E681C4AF1A813DF800CAC0B3 /* Images.xcassets */; };
+		E681C4B11A813E9B00CAC0B3 /* PKHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E681C4841A813DA100CAC0B3 /* PKHUD.framework */; };
+		E681C4B21A813E9B00CAC0B3 /* PKHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E681C4841A813DA100CAC0B3 /* PKHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E681C4B61A813EC500CAC0B3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E681C4AF1A813DF800CAC0B3 /* Images.xcassets */; };
 		E68F58DD1A388B9900A1BBBB /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E629225219C3696C00CB692F /* MultipeerConnectivity.framework */; };
-		E68F58E61A3890DA00A1BBBB /* PKHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E68F58E41A38904900A1BBBB /* PKHUD.framework */; };
-		E68F58E71A3890DA00A1BBBB /* PKHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E68F58E41A38904900A1BBBB /* PKHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E68F58EA1A3897AC00A1BBBB /* CAEmitterLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68F58E91A3897AC00A1BBBB /* CAEmitterLayer.swift */; };
-		E699E1F219D05F470086E793 /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E699E1F119D05F470086E793 /* LaunchScreenView.swift */; };
 		E6B661521A26EAF00062D7BC /* MeshNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B661511A26EAF00062D7BC /* MeshNetwork.swift */; };
+		E6DCBE051A808DCF0012E1BC /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6DCBE041A808DCF0012E1BC /* LaunchViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,16 +38,23 @@
 			remoteGlobalIDString = E64333A919C3693300BFDD88;
 			remoteInfo = Dust;
 		};
+		E681C4B31A813E9B00CAC0B3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E64333A219C3693300BFDD88 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E681C4831A813DA100CAC0B3;
+			remoteInfo = PKHUD;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		E68F58E81A3890DB00A1BBBB /* Embed Frameworks */ = {
+		E681C4B51A813E9B00CAC0B3 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E68F58E71A3890DA00A1BBBB /* PKHUD.framework in Embed Frameworks */,
+				E681C4B21A813E9B00CAC0B3 /* PKHUD.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -57,10 +73,19 @@
 		E64333BF19C3693300BFDD88 /* DustTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DustTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E64333C419C3693300BFDD88 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E64333C519C3693300BFDD88 /* DustTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DustTests.swift; sourceTree = "<group>"; };
-		E68F58E41A38904900A1BBBB /* PKHUD.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PKHUD.framework; sourceTree = "<group>"; };
+		E681C4841A813DA100CAC0B3 /* PKHUD.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PKHUD.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E681C4871A813DA100CAC0B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E681C4881A813DA100CAC0B3 /* PKHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PKHUD.h; sourceTree = "<group>"; };
+		E681C4A31A813DEE00CAC0B3 /* FrameView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrameView.swift; sourceTree = "<group>"; };
+		E681C4A41A813DEE00CAC0B3 /* HUDAssets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HUDAssets.swift; sourceTree = "<group>"; };
+		E681C4A51A813DEE00CAC0B3 /* HUDContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HUDContentView.swift; sourceTree = "<group>"; };
+		E681C4A61A813DEE00CAC0B3 /* HUDController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HUDController.swift; sourceTree = "<group>"; };
+		E681C4A71A813DEE00CAC0B3 /* Window.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Window.swift; sourceTree = "<group>"; };
+		E681C4A81A813DEE00CAC0B3 /* WindowRootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowRootViewController.swift; sourceTree = "<group>"; };
+		E681C4AF1A813DF800CAC0B3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		E68F58E91A3897AC00A1BBBB /* CAEmitterLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAEmitterLayer.swift; sourceTree = "<group>"; };
-		E699E1F119D05F470086E793 /* LaunchScreenView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
 		E6B661511A26EAF00062D7BC /* MeshNetwork.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshNetwork.swift; sourceTree = "<group>"; };
+		E6DCBE041A808DCF0012E1BC /* LaunchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LaunchViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,12 +93,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E68F58E61A3890DA00A1BBBB /* PKHUD.framework in Frameworks */,
 				E68F58DD1A388B9900A1BBBB /* MultipeerConnectivity.framework in Frameworks */,
+				E681C4B11A813E9B00CAC0B3 /* PKHUD.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E64333BC19C3693300BFDD88 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E681C4801A813DA100CAC0B3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -88,6 +120,7 @@
 			children = (
 				E64333AC19C3693300BFDD88 /* Dust */,
 				E64333C219C3693300BFDD88 /* DustTests */,
+				E681C4851A813DA100CAC0B3 /* PKHUD */,
 				E68F58DC1A388B6100A1BBBB /* Frameworks */,
 				E64333AB19C3693300BFDD88 /* Products */,
 			);
@@ -98,6 +131,7 @@
 			children = (
 				E64333AA19C3693300BFDD88 /* Dust.app */,
 				E64333BF19C3693300BFDD88 /* DustTests.xctest */,
+				E681C4841A813DA100CAC0B3 /* PKHUD.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -107,13 +141,13 @@
 			children = (
 				E64333AF19C3693300BFDD88 /* AppDelegate.swift */,
 				E64333B119C3693300BFDD88 /* ViewController.swift */,
+				E6DCBE041A808DCF0012E1BC /* LaunchViewController.swift */,
 				E6B661511A26EAF00062D7BC /* MeshNetwork.swift */,
 				E68F58E91A3897AC00A1BBBB /* CAEmitterLayer.swift */,
 				E64333B319C3693300BFDD88 /* Main.storyboard */,
 				E64333B619C3693300BFDD88 /* Images.xcassets */,
 				E64333B819C3693300BFDD88 /* LaunchScreen.xib */,
 				E64333AD19C3693300BFDD88 /* Supporting Files */,
-				E699E1F119D05F470086E793 /* LaunchScreenView.swift */,
 			);
 			path = Dust;
 			sourceTree = "<group>";
@@ -143,16 +177,50 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		E681C4851A813DA100CAC0B3 /* PKHUD */ = {
+			isa = PBXGroup;
+			children = (
+				E681C4AF1A813DF800CAC0B3 /* Images.xcassets */,
+				E681C4A31A813DEE00CAC0B3 /* FrameView.swift */,
+				E681C4A41A813DEE00CAC0B3 /* HUDAssets.swift */,
+				E681C4A51A813DEE00CAC0B3 /* HUDContentView.swift */,
+				E681C4A61A813DEE00CAC0B3 /* HUDController.swift */,
+				E681C4A71A813DEE00CAC0B3 /* Window.swift */,
+				E681C4A81A813DEE00CAC0B3 /* WindowRootViewController.swift */,
+				E681C4881A813DA100CAC0B3 /* PKHUD.h */,
+				E681C4861A813DA100CAC0B3 /* Supporting Files */,
+			);
+			path = PKHUD;
+			sourceTree = "<group>";
+		};
+		E681C4861A813DA100CAC0B3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E681C4871A813DA100CAC0B3 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		E68F58DC1A388B6100A1BBBB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E68F58E41A38904900A1BBBB /* PKHUD.framework */,
 				E629225219C3696C00CB692F /* MultipeerConnectivity.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		E681C4811A813DA100CAC0B3 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E681C4891A813DA100CAC0B3 /* PKHUD.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		E64333A919C3693300BFDD88 /* Dust */ = {
@@ -162,11 +230,12 @@
 				E64333A619C3693300BFDD88 /* Sources */,
 				E64333A719C3693300BFDD88 /* Frameworks */,
 				E64333A819C3693300BFDD88 /* Resources */,
-				E68F58E81A3890DB00A1BBBB /* Embed Frameworks */,
+				E681C4B51A813E9B00CAC0B3 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				E681C4B41A813E9B00CAC0B3 /* PBXTargetDependency */,
 			);
 			name = Dust;
 			productName = Dust;
@@ -191,6 +260,24 @@
 			productReference = E64333BF19C3693300BFDD88 /* DustTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		E681C4831A813DA100CAC0B3 /* PKHUD */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E681C49D1A813DA200CAC0B3 /* Build configuration list for PBXNativeTarget "PKHUD" */;
+			buildPhases = (
+				E681C47F1A813DA100CAC0B3 /* Sources */,
+				E681C4801A813DA100CAC0B3 /* Frameworks */,
+				E681C4811A813DA100CAC0B3 /* Headers */,
+				E681C4821A813DA100CAC0B3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PKHUD;
+			productName = PKHUD;
+			productReference = E681C4841A813DA100CAC0B3 /* PKHUD.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -207,6 +294,10 @@
 					E64333BE19C3693300BFDD88 = {
 						CreatedOnToolsVersion = 6.0;
 						TestTargetID = E64333A919C3693300BFDD88;
+					};
+					E681C4831A813DA100CAC0B3 = {
+						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = K78G42H4U2;
 					};
 				};
 			};
@@ -225,6 +316,7 @@
 			targets = (
 				E64333A919C3693300BFDD88 /* Dust */,
 				E64333BE19C3693300BFDD88 /* DustTests */,
+				E681C4831A813DA100CAC0B3 /* PKHUD */,
 			);
 		};
 /* End PBXProject section */
@@ -235,6 +327,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E64333B519C3693300BFDD88 /* Main.storyboard in Resources */,
+				E681C4B61A813EC500CAC0B3 /* Images.xcassets in Resources */,
 				E64333BA19C3693300BFDD88 /* LaunchScreen.xib in Resources */,
 				E64333B719C3693300BFDD88 /* Images.xcassets in Resources */,
 			);
@@ -247,6 +340,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E681C4821A813DA100CAC0B3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E681C4B01A813DF800CAC0B3 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -255,9 +356,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				E68F58EA1A3897AC00A1BBBB /* CAEmitterLayer.swift in Sources */,
+				E6DCBE051A808DCF0012E1BC /* LaunchViewController.swift in Sources */,
 				E64333B219C3693300BFDD88 /* ViewController.swift in Sources */,
 				E64333B019C3693300BFDD88 /* AppDelegate.swift in Sources */,
-				E699E1F219D05F470086E793 /* LaunchScreenView.swift in Sources */,
 				E6B661521A26EAF00062D7BC /* MeshNetwork.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -270,6 +371,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E681C47F1A813DA100CAC0B3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E681C4AB1A813DEE00CAC0B3 /* HUDContentView.swift in Sources */,
+				E681C4AD1A813DEE00CAC0B3 /* Window.swift in Sources */,
+				E681C4AE1A813DEE00CAC0B3 /* WindowRootViewController.swift in Sources */,
+				E681C4AA1A813DEE00CAC0B3 /* HUDAssets.swift in Sources */,
+				E681C4A91A813DEE00CAC0B3 /* FrameView.swift in Sources */,
+				E681C4AC1A813DEE00CAC0B3 /* HUDController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -277,6 +391,11 @@
 			isa = PBXTargetDependency;
 			target = E64333A919C3693300BFDD88 /* Dust */;
 			targetProxy = E64333C019C3693300BFDD88 /* PBXContainerItemProxy */;
+		};
+		E681C4B41A813E9B00CAC0B3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E681C4831A813DA100CAC0B3 /* PKHUD */;
+			targetProxy = E681C4B31A813E9B00CAC0B3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -387,9 +506,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Dust",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/PKHUD-dfbeczlgtctjtpdeoyugbzevbvpr/Build/Products/Debug-iphoneos",
 				);
 				INFOPLIST_FILE = Dust/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -404,9 +526,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Dust",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/PKHUD-dfbeczlgtctjtpdeoyugbzevbvpr/Build/Products/Debug-iphoneos",
 				);
 				INFOPLIST_FILE = Dust/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -449,6 +574,55 @@
 			};
 			name = Release;
 		};
+		E681C49E1A813DA200CAC0B3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = PKHUD/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		E681C49F1A813DA200CAC0B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = PKHUD/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -478,6 +652,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		E681C49D1A813DA200CAC0B3 /* Build configuration list for PBXNativeTarget "PKHUD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E681C49E1A813DA200CAC0B3 /* Debug */,
+				E681C49F1A813DA200CAC0B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

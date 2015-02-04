@@ -34,6 +34,20 @@
                ReferencedContainer = "container:Dust.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E681C48D1A813DA200CAC0B3"
+               BuildableName = "PKHUDTests.xctest"
+               BlueprintName = "PKHUDTests"
+               ReferencedContainer = "container:Dust.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -49,6 +63,16 @@
                BlueprintIdentifier = "E64333BE19C3693300BFDD88"
                BuildableName = "DustTests.xctest"
                BlueprintName = "DustTests"
+               ReferencedContainer = "container:Dust.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E681C48D1A813DA200CAC0B3"
+               BuildableName = "PKHUDTests.xctest"
+               BlueprintName = "PKHUDTests"
                ReferencedContainer = "container:Dust.xcodeproj">
             </BuildableReference>
          </TestableReference>

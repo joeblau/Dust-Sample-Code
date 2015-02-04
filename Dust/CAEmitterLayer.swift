@@ -23,6 +23,7 @@ extension CAEmitterLayer {
         
         var emitterCell = CAEmitterCell()
         emitterCell.name = "dustCell"
+        emitterCell.beginTime = CACurrentMediaTime()
         emitterCell.birthRate = 1000
         emitterCell.lifetime = 6.0
         emitterCell.lifetimeRange = 0.5
@@ -48,7 +49,11 @@ extension CAEmitterLayer {
         emitterCell.scale = 3.0/UIScreen.mainScreen().scale
         emitterCell.scaleSpeed = 0.0
         emitterCell.scaleRange = 5.0
-        
+    
         emitterCells = [emitterCell]
+    }
+    
+    func getEmitterCell(idx: Int) -> CAEmitterCell {
+        return emitterCells[idx] as CAEmitterCell
     }
 }

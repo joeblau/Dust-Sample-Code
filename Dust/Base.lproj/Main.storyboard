@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Wdg-Sy-zG8">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="aPe-Rd-tFo">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <scenes>
+        <!--Launch View Controller-->
+        <scene sceneID="XOK-5i-7ae">
+            <objects>
+                <viewController id="aPe-Rd-tFo" customClass="LaunchViewController" customModule="Dust" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="BK5-iE-PSl"/>
+                        <viewControllerLayoutGuide type="bottom" id="Rcd-RB-5u3"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="roO-di-fOa">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <segue destination="Wdg-Sy-zG8" kind="presentation" identifier="startDust" modalTransitionStyle="crossDissolve" id="eTb-RH-M4d"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="X2W-B9-VtT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1371" y="418"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="fB3-es-onp">
             <objects>
@@ -11,7 +32,6 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="RHS-tF-D6W">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     </navigationBar>
                     <connections>
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="B3G-R2-M7a"/>
@@ -32,7 +52,7 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" id="peC-vw-jOB">
                         <nil key="title"/>
@@ -57,7 +77,11 @@
                                 <action selector="selectColor:" destination="BYZ-38-t0r" eventType="valueChanged" id="SGx-ej-7BA"/>
                             </connections>
                         </segmentedControl>
-                        <barButtonItem key="rightBarButtonItem" title="0" id="HFp-TY-UEc"/>
+                        <barButtonItem key="rightBarButtonItem" title="0" id="HFp-TY-UEc">
+                            <connections>
+                                <action selector="setBackgroundColor:" destination="BYZ-38-t0r" id="DdJ-1z-Sdy"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="600" height="600"/>

@@ -10,6 +10,8 @@
 	<string>Dust</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
+		<key>4EA48C4418C0D37C936EB709C50F03661DB187D9</key>
+		<string>github.com:pkluz/PKHUD.git</string>
 		<key>5ACCDF85FC48F2B46433C61E9A834BF249BA78BB</key>
 		<string>github.com:joeblau/Dust.git</string>
 	</dict>
@@ -17,6 +19,8 @@
 	<string>Dust.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
+		<key>4EA48C4418C0D37C936EB709C50F03661DB187D9</key>
+		<string>../../../../../workspaces/github/swiftxcode/PKHUD</string>
 		<key>5ACCDF85FC48F2B46433C61E9A834BF249BA78BB</key>
 		<string>../..</string>
 	</dict>
@@ -35,6 +39,14 @@
 			<string>5ACCDF85FC48F2B46433C61E9A834BF249BA78BB</string>
 			<key>IDESourceControlWCCName</key>
 			<string>Dust</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>4EA48C4418C0D37C936EB709C50F03661DB187D9</string>
+			<key>IDESourceControlWCCName</key>
+			<string>PKHUD</string>
 		</dict>
 	</array>
 </dict>

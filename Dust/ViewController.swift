@@ -7,8 +7,8 @@
 //
 
 import UIKit
-import MultipeerConnectivity
 import PKHUD
+import MultipeerConnectivity
 
 enum GestureType {
     case Pan, Tap, End
@@ -44,6 +44,9 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIApplication.sharedApplication().statusBarStyle = UIStatusBarStyle.Default
+        UIApplication.sharedApplication().setStatusBarHidden(false, withAnimation: .Fade)
+        
         HUDController.sharedController.userInteractionOnUnderlyingViewsEnabled = true
         
         let panGesture = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
@@ -82,7 +85,8 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
 
     func handlePanGesture(gestureRecognizer: UIPanGestureRecognizer) {
         let point = gestureRecognizer.locationInView(self.view)
-        myEmitter.emitterPosition = (gestureRecognizer.state == .Ended) ?CGPointMake(-100,-100):point
+        myEmitter.lifetime = (gestureRecognizer.state == .Ended) ? 0 : 1
+        myEmitter.emitterPosition = point
         myEmitter.emitterShape = kCAEmitterLayerPoint
         
         switch gestureRecognizer.state {
@@ -94,13 +98,13 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
     
     func handleTapGesture(gestureRecoginzer: UITapGestureRecognizer) {
         let point = gestureRecoginzer.locationInView(self.view)
+        myEmitter.lifetime = 1
         myEmitter.emitterPosition = point
         myEmitter.emitterShape = kCAEmitterLayerCircle
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), {
-            self.myEmitter.emitterPosition = CGPointMake(-100,-100)
+            self.myEmitter.lifetime = 0
         })
-        
         sendDataMessage(point, gestureType: .Tap)
     }
     
@@ -116,7 +120,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
         sendData.appendBytes(&color, length: sizeof(DustColors))
         
         var error = NSErrorPointer()
-        meshNetwork.sendData(sendData, peerIDs: meshNetwork.connectedPeers, mode: .Unreliable, error: error)
+        meshNetwork.sendData(sendData, peerIDs: meshNetwork.connectedPeers, mode: .Unreliable, error: nil)
     }
 
     // MARK: Mesh Network Delegate
@@ -145,18 +149,19 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
         let x = CGFloat(percentX * Float(view.bounds.width))
         let y = CGFloat(percentY * Float(view.bounds.height))
         theirEmitter.setValue(color.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
+        
+        theirEmitter.lifetime = 1
+        theirEmitter.emitterPosition = CGPointMake(x, y)
         switch type {
         case .Pan:
             theirEmitter.emitterShape = kCAEmitterLayerPoint
-            theirEmitter.emitterPosition = CGPointMake(x, y)
         case .Tap:
             theirEmitter.emitterShape = kCAEmitterLayerCircle
-            theirEmitter.emitterPosition = CGPointMake(x, y)
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), {
-                self.theirEmitter.emitterPosition = CGPointMake(-100,-100)
+                self.theirEmitter.lifetime = 0
             })
         case .End:
-            theirEmitter.emitterPosition = CGPointMake(-100,-100)
+            theirEmitter.lifetime = 0
         }
     }
     
@@ -168,4 +173,16 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
         }
     }
     
+    @IBAction func setBackgroundColor(sender: AnyObject) {
+        if view.backgroundColor == UIColor.whiteColor() {
+            view.backgroundColor = UIColor(red: 0.067, green: 0.067, blue: 0.067, alpha: 1.0)
+            navigationController?.navigationBar.barStyle = UIBarStyle.Black
+            UIApplication.sharedApplication().statusBarStyle = UIStatusBarStyle.BlackOpaque
+        } else {
+            view.backgroundColor = UIColor.whiteColor()
+            navigationController?.navigationBar.barStyle = UIBarStyle.Default
+            UIApplication.sharedApplication().statusBarStyle = UIStatusBarStyle.Default
+        }
+    }
+
 }
