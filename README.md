@@ -1,5 +1,4 @@
-# Dust
+# Dust-iOS
+iOS Particle Emitter And Multipeer Connectivity
 
-![image]()
-
-## Blog Post
+MIT License
