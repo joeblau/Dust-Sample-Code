@@ -1,30 +1,70 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="16C63a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB">
-            <rect key="frame" x="0.0" y="0.0" width="480" height="480"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="  Copyright (c) 2014 joeblau. All rights reserved." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="8ie-xW-0ye">
-                    <rect key="frame" x="20" y="439" width="441" height="21"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                    <nil key="highlightedColor"/>
-                </label>
+                <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="N5U-na-jX9">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="vPg-Vv-tsz">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vyn-mO-WcQ">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="ILI-6O-V2F">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dust" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rNC-DS-pmP">
+                                            <rect key="frame" x="97" y="226" width="181" height="115"/>
+                                            <fontDescription key="fontDescription" type="system" weight="ultraLight" pointSize="96"/>
+                                            <color key="textColor" red="0.056134156880000001" green="0.056132487949999997" blue="0.056133434179999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="rNC-DS-pmP" firstAttribute="centerY" secondItem="ILI-6O-V2F" secondAttribute="centerY" constant="-50" id="REl-tR-p8X"/>
+                                        <constraint firstItem="rNC-DS-pmP" firstAttribute="centerX" secondItem="ILI-6O-V2F" secondAttribute="centerX" id="lCf-OC-aDF"/>
+                                    </constraints>
+                                </view>
+                                <vibrancyEffect>
+                                    <blurEffect style="dark"/>
+                                </vibrancyEffect>
+                            </visualEffectView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="Vyn-mO-WcQ" firstAttribute="leading" secondItem="vPg-Vv-tsz" secondAttribute="leading" id="Ai9-MN-Me5"/>
+                            <constraint firstAttribute="bottom" secondItem="Vyn-mO-WcQ" secondAttribute="bottom" id="Y7z-US-ifI"/>
+                            <constraint firstAttribute="trailing" secondItem="Vyn-mO-WcQ" secondAttribute="trailing" id="YyZ-eN-xoB"/>
+                            <constraint firstItem="Vyn-mO-WcQ" firstAttribute="top" secondItem="vPg-Vv-tsz" secondAttribute="top" id="f1k-YU-vXV"/>
+                        </constraints>
+                    </view>
+                    <blurEffect style="dark"/>
+                </visualEffectView>
             </subviews>
-            <color key="backgroundColor" red="0.066666666666666666" green="0.066666666666666666" blue="0.066666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color key="backgroundColor" red="0.056134156882762909" green="0.056132487952709198" blue="0.056133434176445007" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="8ie-xW-0ye" secondAttribute="bottom" constant="20" id="Kzo-t9-V3l"/>
-                <constraint firstItem="8ie-xW-0ye" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" symbolic="YES" id="MfP-vx-nX0"/>
-                <constraint firstAttribute="centerX" secondItem="8ie-xW-0ye" secondAttribute="centerX" id="ZEH-qu-HZ9"/>
+                <constraint firstAttribute="trailing" secondItem="N5U-na-jX9" secondAttribute="trailing" id="LaS-bt-4Lt"/>
+                <constraint firstItem="N5U-na-jX9" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="MZb-r6-zWq"/>
+                <constraint firstItem="N5U-na-jX9" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="d0E-HT-bIH"/>
+                <constraint firstAttribute="bottom" secondItem="N5U-na-jX9" secondAttribute="bottom" id="htA-8T-Dle"/>
+                <constraint firstItem="N5U-na-jX9" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="kQv-bM-mQz"/>
+                <constraint firstAttribute="bottom" secondItem="N5U-na-jX9" secondAttribute="bottom" id="kp7-Gk-jw9"/>
+                <constraint firstItem="N5U-na-jX9" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="oMX-7G-0i4"/>
+                <constraint firstAttribute="trailing" secondItem="N5U-na-jX9" secondAttribute="trailing" id="sg3-cu-Qvu"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
-            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="548" y="455"/>
         </view>
     </objects>

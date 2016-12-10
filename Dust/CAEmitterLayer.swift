@@ -11,23 +11,23 @@ import UIKit
 extension CAEmitterLayer {
     convenience init(emitterColor: UIColor!) {
         self.init()
-        emitterPosition = CGPointMake(-100,-100)
-        emitterSize = CGSizeMake(60.0,1)
+        emitterPosition = CGPoint(x: -100,y: -100)
+        emitterSize = CGSize(width: 60.0,height: 1)
         emitterMode = kCAEmitterLayerOutline
         emitterShape = kCAEmitterLayerPoint
         renderMode = kCAEmitterLayerAdditive
         shadowOpacity = 0.0
         shadowRadius = 0.0
-        shadowOffset = CGSizeMake(0,0)
-        shadowColor = UIColor.whiteColor().CGColor
+        shadowOffset = CGSize(width: 0,height: 0)
+        shadowColor = UIColor.white.cgColor
         
-        var emitterCell = CAEmitterCell()
+        let emitterCell = CAEmitterCell()
         emitterCell.name = "dustCell"
         emitterCell.beginTime = CACurrentMediaTime()
         emitterCell.birthRate = 1000
         emitterCell.lifetime = 6.0
         emitterCell.lifetimeRange = 0.5
-        emitterCell.color = emitterColor.CGColor
+        emitterCell.color = emitterColor.cgColor
         emitterCell.redSpeed = 0.000
         emitterCell.greenSpeed = 0.000
         emitterCell.blueSpeed = 0.000
@@ -36,7 +36,7 @@ extension CAEmitterLayer {
         emitterCell.greenRange = 0.000
         emitterCell.blueRange = 0.000
         emitterCell.alphaRange = 0.000
-        emitterCell.contents = UIImage(named: "particle")?.CGImage
+        emitterCell.contents = UIImage(named: "particle")?.cgImage
         emitterCell.emissionRange = CGFloat(2.000*M_PI)
         emitterCell.emissionLatitude = CGFloat(0.000*M_PI)
         emitterCell.emissionLongitude = CGFloat(0.000*M_PI)
@@ -46,14 +46,14 @@ extension CAEmitterLayer {
         emitterCell.yAcceleration = 0
         emitterCell.spin = CGFloat(0.0*M_PI)
         emitterCell.spinRange = CGFloat(0.01*M_PI)
-        emitterCell.scale = 3.0/UIScreen.mainScreen().scale
+        emitterCell.scale = 3.0/UIScreen.main.scale
         emitterCell.scaleSpeed = 0.0
         emitterCell.scaleRange = 5.0
     
         emitterCells = [emitterCell]
     }
     
-    func getEmitterCell(idx: Int) -> CAEmitterCell {
-        return emitterCells[idx] as CAEmitterCell
+    func getEmitterCell(_ idx: Int) -> CAEmitterCell {
+        return emitterCells![idx] as CAEmitterCell
     }
 }

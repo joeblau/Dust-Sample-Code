@@ -11,32 +11,53 @@ import PKHUD
 import MultipeerConnectivity
 
 enum GestureType {
-    case Pan, Tap, End
+    case pan, tap, end
 }
 
 enum DustColors: Int {
-    case Red = 0, Orange, Yellow, Green, Blue, Violet
+    case red, orange, yellow, green, blue, violet
     
-    func get() -> UIColor! {
+    var uiColor: UIColor {
         switch (self) {
-        case .Red: return UIColor(red: 0.898, green: 0.302, blue: 0.259, alpha: 1.0)
-        case .Orange: return UIColor(red: 0.894, green: 0.494, blue: 0.188, alpha: 1.0)
-        case .Yellow: return UIColor(red: 0.941, green: 0.880, blue: 0.336, alpha: 1.0)
-        case .Green: return UIColor(red: 0.224, green: 0.792, blue: 0.455, alpha: 1.0)
-        case .Blue: return UIColor(red: 0.227, green: 0.600, blue: 0.847, alpha: 1.0)
-        case .Violet: return UIColor(red: 0.604, green: 0.361, blue: 0.706, alpha: 1.0)
+        case .red: return UIColor(red: 0.898, green: 0.302, blue: 0.259, alpha: 1.0)
+        case .orange: return UIColor(red: 0.894, green: 0.494, blue: 0.188, alpha: 1.0)
+        case .yellow: return UIColor(red: 0.941, green: 0.880, blue: 0.336, alpha: 1.0)
+        case .green: return UIColor(red: 0.224, green: 0.792, blue: 0.455, alpha: 1.0)
+        case .blue: return UIColor(red: 0.227, green: 0.600, blue: 0.847, alpha: 1.0)
+        case .violet: return UIColor(red: 0.604, green: 0.361, blue: 0.706, alpha: 1.0)
         }
+    }
+    
+    static var colors: [DustColors] {
+        return [.red, .orange, .yellow, .green, .blue, .violet]
     }
 }
 
-class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetworkDelegate  {
+struct DustMessage {
+    var percentX: Float
+    var percentY: Float
+    var gestureType: GestureType
+    var color: DustColors
+}
+
+extension Data {
+    init<T>(from value: T) {
+        var value = value
+        self.init(buffer: UnsafeBufferPointer(start: &value, count: 1))
+    }
+    func to<T>(type: T.Type) -> T {
+        return self.withUnsafeBytes { $0.pointee }
+    }
+}
+
+final class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetworkDelegate  {
     
-    var myEmitter: CAEmitterLayer!
-    var theirEmitter: CAEmitterLayer!
+    private var myEmitter: CAEmitterLayer!
+    private var theirEmitter: CAEmitterLayer!
     
-    var meshNetwork: MeshNetwork = MeshNetwork(serviceType: "Dust-Service")
+    private let meshNetwork = MeshNetwork(serviceType: "Dust-Service")
     
-    var peersOutputStreams: Dictionary<String, NSOutputStream>! = Dictionary<String, NSOutputStream>()
+    private var peersOutputStreams: Dictionary<String, OutputStream>! = Dictionary<String, OutputStream>()
     
     @IBOutlet weak var connectionButton: UIBarButtonItem!
     @IBOutlet weak var connectedPeerCount: UIBarButtonItem!
@@ -45,15 +66,15 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.067, green: 0.067, blue: 0.067, alpha: 1.0)
-        UIApplication.sharedApplication().setStatusBarHidden(false, withAnimation: .Fade)
+        UIApplication.shared.setStatusBarHidden(false, with: .fade)
         
-        HUDController.sharedController.userInteractionOnUnderlyingViewsEnabled = true
+        PKHUD.sharedHUD.userInteractionOnUnderlyingViewsEnabled = true
         
-        let panGesture = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(ViewController.handlePanGesture(_:)))
         panGesture.minimumNumberOfTouches = 1
         panGesture.delegate = self
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(ViewController.handleTapGesture(_:)))
         tapGesture.numberOfTouchesRequired = 1
         tapGesture.numberOfTapsRequired = 2
         tapGesture.delegate = self
@@ -64,11 +85,11 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
         meshNetwork.delegate = self
         meshNetwork.joinMesh()
 
-        connectionButton.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
-        connectedPeerCount.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
-        colorSegmentControl.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
+        connectionButton.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.uiColor
+        connectedPeerCount.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.uiColor
+        colorSegmentControl.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.uiColor
         
-        let emitterColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
+        let emitterColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.uiColor
         myEmitter = CAEmitterLayer(emitterColor: emitterColor)
         view.layer.addSublayer(myEmitter)
         
@@ -76,96 +97,96 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, MeshNetwork
         view.layer.addSublayer(theirEmitter)
     }
     
-    @IBAction func selectColor(sender: UISegmentedControl) {
-        connectionButton.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
-        connectedPeerCount.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
-        colorSegmentControl.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get()
-        myEmitter.setValue(DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
+    @IBAction func selectColor(_ sender: UISegmentedControl) {
+        connectionButton.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.uiColor
+        connectedPeerCount.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.uiColor
+        colorSegmentControl.tintColor = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.uiColor
+        myEmitter.setValue(DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)?.uiColor.cgColor, forKeyPath: "emitterCells.dustCell.color")
     }
 
-    func handlePanGesture(gestureRecognizer: UIPanGestureRecognizer) {
-        let point = gestureRecognizer.locationInView(self.view)
-        myEmitter.lifetime = (gestureRecognizer.state == .Ended) ? 0 : 1
+    func handlePanGesture(_ gestureRecognizer: UIPanGestureRecognizer) {
+        let point = gestureRecognizer.location(in: self.view)
+        myEmitter.lifetime = (gestureRecognizer.state == .ended) ? 0 : 1
         myEmitter.emitterPosition = point
         myEmitter.emitterShape = kCAEmitterLayerPoint
         
         switch gestureRecognizer.state {
-        case .Began, .Changed: sendDataMessage(point, gestureType: .Pan)
-        case .Ended: sendDataMessage(point, gestureType: .End)
+        case .began, .changed: sendDataMessage(point, gestureType: .pan)
+        case .ended: sendDataMessage(point, gestureType: .end)
         default: return
         }
     }
     
-    func handleTapGesture(gestureRecoginzer: UITapGestureRecognizer) {
-        let point = gestureRecoginzer.locationInView(self.view)
+    func handleTapGesture(_ gestureRecoginzer: UITapGestureRecognizer) {
+        let point = gestureRecoginzer.location(in: self.view)
         myEmitter.lifetime = 1
         myEmitter.emitterPosition = point
         myEmitter.emitterShape = kCAEmitterLayerCircle
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: {
             self.myEmitter.lifetime = 0
         })
-        sendDataMessage(point, gestureType: .Tap)
+        sendDataMessage(point, gestureType: .tap)
     }
     
-    func sendDataMessage(point: CGPoint, gestureType: GestureType) {
-        var sendData = NSMutableData()
-        var percentX = Float(point.x/view.bounds.width)
-        var percentY = Float(point.y/view.bounds.height)
-        var type = gestureType
-        var color: DustColors = DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)!
-        sendData.appendBytes(&percentX, length: sizeof(Float))
-        sendData.appendBytes(&percentY, length: sizeof(Float))
-        sendData.appendBytes(&type, length: sizeof(GestureType))
-        sendData.appendBytes(&color, length: sizeof(DustColors))
+    func sendDataMessage(_ point: CGPoint, gestureType: GestureType) {
         
-        var error = NSErrorPointer()
-        meshNetwork.sendData(sendData, peerIDs: meshNetwork.connectedPeers, mode: .Unreliable, error: nil)
+        
+        let message = DustMessage(percentX: Float(point.x/view.bounds.width),
+                                  percentY: Float(point.y/view.bounds.height),
+                                  gestureType: gestureType,
+                                  color: DustColors(rawValue: colorSegmentControl.selectedSegmentIndex)!)
+        
+        meshNetwork.sendData(Data(from: message), peerIDs: meshNetwork.connectedPeers, mode: .unreliable)
     }
 
     // MARK: Mesh Network Delegate
-    func meshNetwork(meshNetwork: MeshNetwork, peer peerID: MCPeerID, changedState state: MCSessionState, currentPeers: [AnyObject]) {
-        let (status, image) = (state == .NotConnected) ? ("Disconnected", HUDAssets.crossImage) : ("Connected", HUDAssets.checkmarkImage)
-        HUDController.sharedController.contentView = HUDContentView.StatusView(title: peerID.displayName, subtitle: status, image: image)
-        HUDController.sharedController.show()
-        HUDController.sharedController.hide(afterDelay: 4.0)
-        connectionButton.image = UIImage(named: currentPeers.count >  0 ?"connect":"disconnect")
+    func meshNetwork(_ meshNetwork: MeshNetwork, peer peerID: MCPeerID, changedState state: MCSessionState, currentPeers: [AnyObject]) {
+        switch state {
+        case .notConnected:
+            PKHUD.sharedHUD.contentView = PKHUDSquareBaseView.init(image: PKHUDAssets.crossImage, title: "Disconnected", subtitle: peerID.displayName)
+        case .connected:
+            PKHUD.sharedHUD.contentView = PKHUDSquareBaseView.init(image: PKHUDAssets.checkmarkImage, title: "Connected", subtitle: peerID.displayName)
+        case .connecting:
+            PKHUD.sharedHUD.contentView = PKHUDSquareBaseView.init(image: PKHUDAssets.checkmarkImage, title: "Connecting", subtitle: peerID.displayName)
+        }
+        PKHUD.sharedHUD.show()
+        PKHUD.sharedHUD.hide(afterDelay: 4.0)
+        connectionButton.image = UIImage(named: currentPeers.count >  0 ? "connect" : "disconnect")
         connectedPeerCount.title = "\(currentPeers.count)"
     }
     
-    func meshNetwork(meshNetwork: MeshNetwork, failedToJoinMesh error: NSError) {
-        HUDController.sharedController.contentView = HUDContentView.SubtitleView(subtitle: "Error", image: HUDAssets.crossImage)
-        HUDController.sharedController.show()
-        HUDController.sharedController.hide(afterDelay: 4.0)
+    func meshNetwork(_ meshNetwork: MeshNetwork, failedToJoinMesh error: Error) {
+        PKHUD.sharedHUD.contentView = PKHUDSquareBaseView.init(image: PKHUDAssets.crossImage, title: "Error", subtitle: nil)
+        PKHUD.sharedHUD.show()
+        PKHUD.sharedHUD.hide(afterDelay: 4.0)
     }
     
-    func meshNetwork(meshNetwork: MeshNetwork, didReceiveData data: NSData, fromPeer peerdID: MCPeerID) {
-        var (percentX, percentY, type, color) = (Float(), Float(), GestureType.Pan, DustColors.Red)
-        data.getBytes(&percentX, range: NSMakeRange(0, 4))
-        data.getBytes(&percentY, range: NSMakeRange(4, 4))
-        data.getBytes(&type, range: NSMakeRange(8, 1))
-        data.getBytes(&color, range: NSMakeRange(9, 1))
+    func meshNetwork(_ meshNetwork: MeshNetwork, didReceiveData data: Data, fromPeer peerdID: MCPeerID) {
 
-        let x = CGFloat(percentX * Float(view.bounds.width))
-        let y = CGFloat(percentY * Float(view.bounds.height))
-        theirEmitter.setValue(color.get().CGColor, forKeyPath: "emitterCells.dustCell.color")
         
+        let message = data.to(type: DustMessage.self)
+        
+
+        let x = CGFloat(message.percentX * Float(view.bounds.width))
+        let y = CGFloat(message.percentY * Float(view.bounds.height))
+        theirEmitter.setValue(message.color.uiColor.cgColor, forKeyPath: "emitterCells.dustCell.color")
         theirEmitter.lifetime = 1
-        theirEmitter.emitterPosition = CGPointMake(x, y)
-        switch type {
-        case .Pan:
+        theirEmitter.emitterPosition = CGPoint(x: x, y: y)
+        switch message.gestureType {
+        case .pan:
             theirEmitter.emitterShape = kCAEmitterLayerPoint
-        case .Tap:
+        case .tap:
             theirEmitter.emitterShape = kCAEmitterLayerCircle
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: {
                 self.theirEmitter.lifetime = 0
             })
-        case .End:
+        case .end:
             theirEmitter.lifetime = 0
         }
     }
     
-    @IBAction func connect(sender: UIBarButtonItem) {
+    @IBAction func connect(_ sender: UIBarButtonItem) {
         if meshNetwork.connectedPeers.count == 0 {
             meshNetwork.joinMesh()
         } else {

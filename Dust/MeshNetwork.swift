@@ -11,35 +11,35 @@ import MultipeerConnectivity
 // Added @objc in order to support optional protocol methods
 @objc protocol MeshNetworkDelegate {
     // Required
-    func meshNetwork(meshNetwork: MeshNetwork, peer: MCPeerID, changedState state: MCSessionState, currentPeers: [AnyObject])
-    func meshNetwork(meshNetwork: MeshNetwork, failedToJoinMesh error: NSError)
+    func meshNetwork(_ meshNetwork: MeshNetwork, peer: MCPeerID, changedState state: MCSessionState, currentPeers: [AnyObject])
+    func meshNetwork(_ meshNetwork: MeshNetwork, failedToJoinMesh error: Error)
     
     // Optional
-    optional func meshNetwork(meshNetwork: MeshNetwork, didReceiveData data: NSData, fromPeer peerdID: MCPeerID)
-    optional func meshNetwork(meshNetowrk: MeshNetwork, didReceiveStream stream: NSInputStream, withName streamName: String, fromPeer peerID: MCPeerID)
-    optional func meshNetwork(meshNetwork: MeshNetwork, didStartReceivingResourceWithName resourceName: NSString, fromPeer peerID: MCPeerID, withProgress progress: NSProgress)
-    optional func meshNetwork(meshNetwork: MeshNetwork,  didFinishReceivingResourceWithName resourceName: NSString, fromPeer peerID: MCPeerID, atURL localURL: NSURL, withError error: NSError)
+    @objc optional func meshNetwork(_ meshNetwork: MeshNetwork, didReceiveData data: Data, fromPeer peerdID: MCPeerID)
+    @objc optional func meshNetwork(_ meshNetowrk: MeshNetwork, didReceiveStream stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID)
+    @objc optional func meshNetwork(_ meshNetwork: MeshNetwork, didStartReceivingResourceWithName resourceName: NSString, fromPeer peerID: MCPeerID, withProgress progress: Progress)
+    @objc optional func meshNetwork(_ meshNetwork: MeshNetwork,  didFinishReceivingResourceWithName resourceName: NSString, fromPeer peerID: MCPeerID, atURL localURL: URL, withError error: NSError)
 }
 
-class MeshNetwork: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiserDelegate, MCNearbyServiceBrowserDelegate {
-    
-    var connected: Bool = false
-    var acceptingPeers: Bool = false
-    var serviceType: String = "Dust-Service"
-    var displayName: String = UIDevice.currentDevice().name
+final class MeshNetwork: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiserDelegate, MCNearbyServiceBrowserDelegate {
     
     var delegate: MeshNetworkDelegate!
+
+    private var connected = false
+    private var acceptingPeers = false
+    private let serviceType: String
+    private let displayName: String
+    private var _session: MCSession!
+    private var _peerID: MCPeerID!
+    private var _serviceAdvertiser: MCNearbyServiceAdvertiser!
+    private var _serviceBrowser: MCNearbyServiceBrowser!
     
-    var _session: MCSession!
-    var _peerID: MCPeerID!
-    var _serviceAdvertiser: MCNearbyServiceAdvertiser!
-    var _serviceBrowser: MCNearbyServiceBrowser!
+    // MARK: - Life Cycle
     
-    // MARK: Life Cycle
-    init(serviceType: String, displayName: String = UIDevice.currentDevice().name) {
-        super.init()
+    init(serviceType: String = "Dust-Service", displayName: String = UIDevice.current.name) {
         self.serviceType = serviceType
         self.displayName = displayName
+        super.init()
     }
     
     func joinMesh() {
@@ -61,30 +61,30 @@ class MeshNetwork: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiserDelegat
         session.disconnect()
     }
     
-    // MARK: communication
-    func sendData(data: NSData, mode: MCSessionSendDataMode, error: NSErrorPointer) -> Bool {
-        return session.sendData(data, toPeers: session.connectedPeers, withMode: mode, error: error)
+    // MARK: - Communication
+    func sendData(_ data: Data, peerIDs: [MCPeerID], mode: MCSessionSendDataMode) {
+        do {
+            try session.send(data, toPeers: peerIDs, with: .reliable)
+        } catch {
+            debugPrint(error)
+        }
+    }
+
+    func startStreamWith(_ name: String!, peerID: MCPeerID!, error: NSErrorPointer!) -> OutputStream {
+        return try! self.session.startStream(withName: name, toPeer: peerID)
     }
     
-    func sendData(data: NSData, peerIDs: [AnyObject], mode: MCSessionSendDataMode, error: NSErrorPointer) -> Bool {
-        return session.sendData(data, toPeers: peerIDs, withMode: mode, error: error)
+    func sendResourceAtURL(_ resourceURL: URL, resourceName: String, peerID: MCPeerID, completionHandler: ((NSError?) -> Void)!) -> Progress {
+        return self.session.sendResource(at: resourceURL, withName: resourceName, toPeer: peerID, withCompletionHandler: completionHandler as! ((Error?) -> Void)?)!
     }
     
-    func startStreamWith(name: String!, peerID: MCPeerID!, error: NSErrorPointer!) -> NSOutputStream {
-        return self.session.startStreamWithName(name, toPeer: peerID, error: error)
-    }
-    
-    func sendResourceAtURL(resourceURL: NSURL, resourceName: String, peerID: MCPeerID, completionHandler: ((NSError!) -> Void)!) -> NSProgress {
-        return self.session.sendResourceAtURL(resourceURL, withName: resourceName, toPeer: peerID, withCompletionHandler: completionHandler)
-    }
-    
-    // MARK: Properies
-    var connectedPeers: [AnyObject]! {
+    // MARK: - Properties
+    var connectedPeers: [MCPeerID] {
         return self.session.connectedPeers
     }
     
     var session: MCSession! {
-        _session = _session ?? MCSession(peer: self.peerID, securityIdentity: nil, encryptionPreference: .None)
+        _session = _session ?? MCSession(peer: self.peerID, securityIdentity: nil, encryptionPreference: .none)
         _session.delegate = _session.delegate ?? self
         return _session
     }
@@ -105,62 +105,67 @@ class MeshNetwork: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiserDelegat
         return _serviceBrowser
     }
     
-    // MARK: Session Delegate
-    func session(session: MCSession!, peer peerID: MCPeerID!, didChangeState state: MCSessionState) {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+    // MARK: - Session Delegate
+    func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
+        DispatchQueue.main.async(execute: { () -> Void in
             self.delegate.meshNetwork(self, peer: peerID, changedState: state, currentPeers: self.session.connectedPeers)
         })
     }
     
-    func session(session: MCSession!, didReceiveData data: NSData!, fromPeer peerID: MCPeerID!) {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+    func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
+        DispatchQueue.main.async(execute: { () -> Void in
             self.delegate.meshNetwork!(self, didReceiveData: data, fromPeer: peerID)
         })
     }
     
-    func session(session: MCSession!, didReceiveStream stream: NSInputStream!, withName streamName: String!, fromPeer peerID: MCPeerID!) {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+    func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {
+        DispatchQueue.main.async(execute: { () -> Void in
             self.delegate.meshNetwork!(self, didReceiveStream: stream, withName: streamName, fromPeer: peerID)
         })
+
     }
     
-    func session(session: MCSession!, didStartReceivingResourceWithName resourceName: String!, fromPeer peerID: MCPeerID!, withProgress progress: NSProgress!) {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.delegate.meshNetwork!(self, didStartReceivingResourceWithName: resourceName, fromPeer: peerID, withProgress: progress)
+    func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress) {
+        DispatchQueue.main.async(execute: { () -> Void in
+            self.delegate.meshNetwork!(self, didStartReceivingResourceWithName: resourceName as NSString, fromPeer: peerID, withProgress: progress)
         })
     }
     
-    func session(session: MCSession!, didFinishReceivingResourceWithName resourceName: String!, fromPeer peerID: MCPeerID!, atURL localURL: NSURL!, withError error: NSError!) {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.delegate.meshNetwork!(self, didFinishReceivingResourceWithName: resourceName, fromPeer: peerID, atURL: localURL, withError: error)
+    func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL, withError error: Error?) {
+        DispatchQueue.main.async(execute: { () -> Void in
+            self.delegate.meshNetwork!(self, didFinishReceivingResourceWithName: resourceName as NSString, fromPeer: peerID, atURL: localURL, withError: error as! NSError)
         })
     }
-    
-    func session(session: MCSession!, didReceiveCertificate certificate: [AnyObject]!, fromPeer peerID: MCPeerID!, certificateHandler: ((Bool) -> Void)!) {
+
+    func session(_ session: MCSession, didReceiveCertificate certificate: [Any]?, fromPeer peerID: MCPeerID, certificateHandler: @escaping (Bool) -> Void) {
         certificateHandler(true)
     }
+
+    // MARK: - Advertiser Delegate
     
-    // MARK: Advertiser Delegate
-    func advertiser(advertiser: MCNearbyServiceAdvertiser!, didReceiveInvitationFromPeer peerID: MCPeerID!, withContext context: NSData!, invitationHandler: ((Bool, MCSession!) -> Void)!) {
+    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
         if (peerID.displayName < self.peerID.displayName) {
             invitationHandler(true, self.session)
         }
     }
 
-    func advertiser(advertiser: MCNearbyServiceAdvertiser!, didNotStartAdvertisingPeer error: NSError!) {
+    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Error) {
         self.delegate.meshNetwork(self, failedToJoinMesh: error)
+
     }
+
+    // MARK: - Browser Delegate
     
-    // MARK: Browser Delegate
-    func browser(browser: MCNearbyServiceBrowser!, foundPeer peerID: MCPeerID!, withDiscoveryInfo info: [NSObject : AnyObject]!) {
+    func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
         if peerID.displayName > self.peerID.displayName {
-            serviceBrowser.invitePeer(peerID, toSession: self.session, withContext: nil, timeout: 10)
+            serviceBrowser.invitePeer(peerID, to: self.session, withContext: nil, timeout: 10)
         }
     }
     
-    func browser(browser: MCNearbyServiceBrowser!, lostPeer peerID: MCPeerID!) {}
+    func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {}
     
-    func browser(browser: MCNearbyServiceBrowser!, didNotStartBrowsingForPeers error: NSError!) {
+    func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
         delegate.meshNetwork(self, failedToJoinMesh: error)
+
     }
 }

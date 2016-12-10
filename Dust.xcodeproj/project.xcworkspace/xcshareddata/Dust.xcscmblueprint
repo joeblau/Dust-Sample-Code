@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "5ACCDF85FC48F2B46433C61E9A834BF249BA78BB",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "5ACCDF85FC48F2B46433C61E9A834BF249BA78BB" : 0,
+    "4EA48C4418C0D37C936EB709C50F03661DB187D9" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "247A4383-6D1C-4AA5-8AC8-1769FB96780B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "5ACCDF85FC48F2B46433C61E9A834BF249BA78BB" : "Dust-iOS\/",
+    "4EA48C4418C0D37C936EB709C50F03661DB187D9" : "workspaces\/github\/swiftxcode\/PKHUD"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Dust",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Dust.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:pkluz\/PKHUD.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "4EA48C4418C0D37C936EB709C50F03661DB187D9"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:joeblau\/Dust.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5ACCDF85FC48F2B46433C61E9A834BF249BA78BB"
+    }
+  ]
+}
